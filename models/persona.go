@@ -1,94 +1,112 @@
 package models
 
 import (
-	"encoding/json"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"net/url"
-
 	"github.com/astaxie/beego"
+	"github.com/markbates/goth"
+	"github.com/markbates/goth/providers/github"
+	uuid "github.com/satori/go.uuid"
 	"menteslibres.net/gosexy/to"
 )
 
 var (
-	outwardUrl = beego.AppConfig.String("outwardloc")
+	outwardUrl   = beego.AppConfig.String("outwardloc")
+	githubKey    = beego.AppConfig.String("auth::githubKey")
+	githubSecret = beego.AppConfig.String("auth::githubSecret")
 )
 
-type PersonaResponse struct {
-	Status   string `json: "status"`
-	Email    string `json: "email,omitempty"`
-	Audience string `json: "audience,omitempty"`
-	Expires  int64  `json: "expires,omitempty"`
-	Issuer   string `json: "issuer,omitempty"`
-	Reason   string `json: "reason,omitempty"`
+func init() {
+	goth.UseProviders(github.New(githubKey, githubSecret, outwardUrl+"/auth/login/callback"))
 }
 
-type PersonaCheckController struct {
+type GithubCheckController struct {
 	beego.Controller
 }
 
-func (this *PersonaCheckController) Get() {
-	session := this.GetSession("persona")
+func (this *GithubCheckController) Get() {
+	session := this.GetSession("github")
 	if session != nil {
-		pr := PersonaResponse{}
-		json.Unmarshal(to.Bytes(session), &pr)
-		this.Ctx.WriteString(pr.Email)
+		emailLogin := to.String(session)
+		this.Ctx.WriteString(emailLogin)
 	} else {
 		this.Ctx.WriteString("")
 	}
 }
 
-type PersonaLogoutController struct {
+type GithubLogoutController struct {
 	beego.Controller
 }
 
-func (this *PersonaLogoutController) Get() {
-	this.DelSession("persona")
+func (this *GithubLogoutController) Get() {
+	this.DelSession("github")
 	this.DestroySession()
 	this.Ctx.WriteString("OK")
 }
 
-type PersonaLoginController struct {
+type GithubLoginController struct {
 	beego.Controller
 }
 
-func (this *PersonaLoginController) Post() {
-	assertion := this.GetString("assertion")
-	if assertion == "" {
-		this.Abort("400")
-	}
-
-	data := url.Values{"assertion": {assertion}, "audience": {outwardUrl}}
-
-	resp, err := http.PostForm("https://verifier.login.persona.org/verify", data)
+func (this *GithubLoginController) Get() {
+	provider, err := goth.GetProvider("github")
 	if err != nil {
-		log.Println(err)
-		this.Abort("400")
+		panic(err)
 	}
-	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	stateUUID := uuid.NewV4()
+	this.SetSession("oauth2State", stateUUID.String())
+
+	oauth2Sess, err := provider.BeginAuth(stateUUID.String())
 	if err != nil {
-		log.Println(err)
-		this.Abort("500")
+		panic(err)
 	}
 
-	pr := PersonaResponse{}
-	err = json.Unmarshal(body, &pr)
+	oauth2URL, err := oauth2Sess.GetAuthURL()
 	if err != nil {
-		log.Println(err)
-		this.Abort("403")
+		panic(err)
 	}
 
-	if pr.Status != "okay" {
-		this.Abort("403")
+	this.SetSession("oauth2Sess", oauth2Sess.Marshal())
+
+	referrer := this.Ctx.Request.Referer()
+	if referrer == "" {
+		this.SetSession("login-referrer", outwardUrl)
+	} else {
+		this.SetSession("login-referrer", referrer)
 	}
 
-	go FindUser(pr.Email)
+	this.Redirect(oauth2URL, 307)
+}
 
-	this.SetSession("persona", body)
+type GithubLoginCallbackController struct {
+	beego.Controller
+}
 
-	this.Data["json"] = &pr
-	this.ServeJSON()
+func (this *GithubLoginCallbackController) Get() {
+
+	provider, err := goth.GetProvider("github")
+	if err != nil {
+		panic(err)
+	}
+
+	oauth2Sess, err := provider.UnmarshalSession(to.String(this.GetSession("oauth2Sess")))
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = oauth2Sess.Authorize(provider, this.Ctx.Request.URL.Query())
+	if err != nil {
+		panic(err)
+	}
+
+	oauth2User, err := provider.FetchUser(oauth2Sess)
+	if err != nil {
+		panic(err)
+	}
+
+	go FindUser(oauth2User.Email)
+
+	this.SetSession("github", oauth2User.Email)
+
+	referrer := to.String(this.GetSession("login-referrer"))
+	this.Redirect(referrer, 307)
 }

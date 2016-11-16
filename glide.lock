@@ -1,5 +1,5 @@
-hash: b6f61f760bf229bd2d9445fe71f311b6932a62a2d6b8a9292bdb56436b514194
-updated: 2016-11-15T23:34:06.119140143-05:00
+hash: 4f790dc1780a11201c79311c28de58fd1f3fc4f0d9d35bd7615c41c596ea71ae
+updated: 2016-11-16T00:27:43.233386303-05:00
 imports:
 - name: github.com/astaxie/beego
   version: b635af5a8cd798ae9ede1adb6f9472fa87361168
@@ -14,16 +14,38 @@ imports:
   - utils
 - name: github.com/go-sql-driver/mysql
   version: 8f6c67f0228a4a6a962008d6c3d1e694e4532e71
+- name: github.com/golang/protobuf
+  version: 4a5b3fd3082794b57dadf9f962fffa5ecad974d5
+  subpackages:
+  - proto
 - name: github.com/markbates/goth
   version: fe9a7e293372a2839c9e9eb3bbb48bb977f2cfa8
+  subpackages:
+  - providers/github
 - name: github.com/mattn/go-sqlite3
   version: fba66eb11643069e747022997e9be3b502b2c6fb
 - name: github.com/pmylund/go-cache
   version: 1881a9bccb818787f68c52bfba648c6cf34c34fa
+- name: github.com/satori/go.uuid
+  version: b061729afc07e77a8aa4fad0a2fd840958f1942a
 - name: golang.org/x/net
   version: e57319ce2bbbdc638169d4756554fbaedc805399
   subpackages:
   - context
+- name: golang.org/x/oauth2
+  version: d5040cddfc0da40b408c9a1da4728662435176a9
+  subpackages:
+  - internal
+- name: google.golang.org/appengine
+  version: ca59ef35f409df61fa4a5f8290ff289b37eccfb8
+  subpackages:
+  - internal
+  - internal/base
+  - internal/datastore
+  - internal/log
+  - internal/remote_api
+  - internal/urlfetch
+  - urlfetch
 - name: menteslibres.net/gosexy/dig
   version: 8c84038322702f6214cc1403a74c33c86ad65f9a
 - name: menteslibres.net/gosexy/to

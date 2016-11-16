@@ -9,3 +9,5 @@ import:
 - package: menteslibres.net/gosexy/dig
 - package: menteslibres.net/gosexy/to
 - package: github.com/markbates/goth
+- package: github.com/satori/go.uuid
+- package: golang.org/x/oauth2

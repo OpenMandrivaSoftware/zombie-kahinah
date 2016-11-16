@@ -1,8 +1,6 @@
 package models
 
 import (
-	"encoding/json"
-
 	"github.com/astaxie/beego"
 	"menteslibres.net/gosexy/to"
 )
@@ -32,11 +30,9 @@ func IsLoggedIn(controller *beego.Controller) string {
 	}
 
 	// check persona
-	session := controller.GetSession("persona")
+	session := controller.GetSession("github")
 	if session == nil {
 		return ""
 	}
-	pr := PersonaResponse{}
-	json.Unmarshal(to.Bytes(session), &pr)
-	return pr.Email
+	return to.String(session)
 }

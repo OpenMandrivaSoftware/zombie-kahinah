@@ -68,9 +68,10 @@ func main() {
 	// AUTHENTICATION [persona]
 	// --------------------------------------------------------------------
 	//
-	beego.Router(util.GetPrefixString("/auth/check"), &models.PersonaCheckController{})
-	beego.Router(util.GetPrefixString("/auth/login"), &models.PersonaLoginController{})
-	beego.Router(util.GetPrefixString("/auth/logout"), &models.PersonaLogoutController{})
+	beego.Router(util.GetPrefixString("/auth/check"), &models.GithubCheckController{})
+	beego.Router(util.GetPrefixString("/auth/login/callback"), &models.GithubLoginCallbackController{})
+	beego.Router(util.GetPrefixString("/auth/login"), &models.GithubLoginController{})
+	beego.Router(util.GetPrefixString("/auth/logout"), &models.GithubLogoutController{})
 
 	//
 	// --------------------------------------------------------------------

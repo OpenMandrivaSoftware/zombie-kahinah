@@ -30,47 +30,18 @@ $("document").ready(function(){
     async: false
   });
 
-  navigator.id.watch({
-    loggedInUser: user,
-    onlogin: function(assertion) {
-      $("#login").text("Logging in...");
-      $.ajax({
-        type: 'POST',
-        url: window.urlPrefix + '/auth/login',
-        data: {assertion: assertion},
-        success: function(res, status, xhr) {
-          location.reload(true);
-        },
-        error: function(xhr, status, err) { 
-          $("#login").text("Failed!");
-          $("#login").attr("class","btn btn-danger navbar-btn");
-          navigator.id.logout();
-        },
-      });
-    },
-    onlogout: function() {
-      $.get(window.urlPrefix + '/auth/logout', function() {
-        location.reload(true);
-      });
-    }
-  });
-
   $("#login").on("click", function(e) {
     e.preventDefault();
-    $("#login").text("[Popup Appeared]");
+    $("#login").text("Logging in...");
     $("#login").attr("class", "btn btn-info navbar-btn");
-    navigator.id.request({
-      siteName: "Kahinah",
-      oncancel: function() {
-        $("#login").text("Login Canceled");
-        $("#login").attr("class","btn btn-danger navbar-btn");
-      },
-    });
+    window.location.href = window.urlPrefix + '/auth/login';
   });
 
   $("#logout").on("click", function(e) {
     e.preventDefault();
-    navigator.id.logout();
+    $.get(window.urlPrefix + '/auth/logout', function() {
+      window.location.href = window.location.href;
+    });
   });
 
 });
