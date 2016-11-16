@@ -1,4 +1,4 @@
-package: github.com/robxu9/kahinah
+package: github.com/robxu9/zombie-kahinah
 import:
 - package: github.com/astaxie/beego
   subpackages:

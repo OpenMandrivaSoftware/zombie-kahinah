@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/robxu9/kahinah/util"
+	"github.com/robxu9/zombie-kahinah/util"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -10,8 +10,8 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"github.com/robxu9/kahinah/integration"
-	"github.com/robxu9/kahinah/models"
+	"github.com/robxu9/zombie-kahinah/integration"
+	"github.com/robxu9/zombie-kahinah/models"
 	"menteslibres.net/gosexy/to"
 )
 

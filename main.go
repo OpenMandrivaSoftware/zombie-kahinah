@@ -11,12 +11,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/robxu9/kahinah/util"
+	"github.com/robxu9/zombie-kahinah/util"
 
 	"github.com/astaxie/beego"
-	"github.com/robxu9/kahinah/controllers"
-	"github.com/robxu9/kahinah/integration"
-	"github.com/robxu9/kahinah/models"
+	"github.com/robxu9/zombie-kahinah/controllers"
+	"github.com/robxu9/zombie-kahinah/integration"
+	"github.com/robxu9/zombie-kahinah/models"
 	"menteslibres.net/gosexy/to"
 )
 
