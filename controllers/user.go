@@ -17,5 +17,5 @@ func (u *UserController) Get() {
 	user := models.FindUser(userStr)
     _ = user
 
-	u.TplNames = ""
+	u.TplName = ""
 }

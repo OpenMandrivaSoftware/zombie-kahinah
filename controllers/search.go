@@ -17,9 +17,9 @@ type SearchController struct {
 func (this *SearchController) Get() {
 	this.Data = this.Parameters
 	if this.Generic {
-		this.TplNames = "generic_list.tpl"
+		this.TplName = "generic_list.tpl"
 	} else {
-		this.TplNames = "builds_list.tpl"
+		this.TplName = "builds_list.tpl"
 	}
 }
 

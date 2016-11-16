@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
 	"github.com/robxu9/kahinah/util"
 
 	"github.com/astaxie/beego"
@@ -20,11 +21,11 @@ import (
 )
 
 func main() {
-	beego.SessionOn = true
+	beego.BConfig.WebConfig.Session.SessionOn = true
 
-	beego.EnableXSRF = true
-	beego.XSRFKEY = getRandomString(50)
-	beego.XSRFExpire = 3600
+	beego.BConfig.WebConfig.EnableXSRF = true
+	beego.BConfig.WebConfig.XSRFKey = getRandomString(50)
+	beego.BConfig.WebConfig.XSRFExpire = 3600
 
 	beego.SetStaticPath(util.GetPrefixString("/static"), "static")
 
@@ -104,7 +105,7 @@ func main() {
 	// ERROR HANDLERS
 	// --------------------------------------------------------------------
 	//
-	beego.Errorhandler("400", func(rw http.ResponseWriter, r *http.Request) {
+	beego.ErrorHandler("400", func(rw http.ResponseWriter, r *http.Request) {
 
 		templateName := "errors/400.tpl"
 
@@ -114,15 +115,12 @@ func main() {
 		data["Tab"] = -1
 		data["copyright"] = time.Now().Year()
 
-		if beego.RunMode == "dev" {
-			beego.BuildTemplate(beego.ViewsPath)
+		if beego.BConfig.RunMode == "dev" {
+			beego.BuildTemplate(beego.BConfig.WebConfig.ViewsPath)
 		}
 
 		newbytes := bytes.NewBufferString("")
-		if _, ok := beego.BeeTemplates[templateName]; !ok {
-			panic("can't find templatefile in the path:" + templateName)
-		}
-		err := beego.BeeTemplates[templateName].ExecuteTemplate(newbytes, templateName, data)
+		err := beego.ExecuteTemplate(newbytes, templateName, data)
 		if err != nil {
 			panic("template Execute err: " + err.Error())
 		}
@@ -130,7 +128,7 @@ func main() {
 		fmt.Fprint(rw, template.HTML(string(tplcontent)))
 	})
 
-	beego.Errorhandler("403", func(rw http.ResponseWriter, r *http.Request) {
+	beego.ErrorHandler("403", func(rw http.ResponseWriter, r *http.Request) {
 
 		templateName := "errors/403.tpl"
 
@@ -140,15 +138,11 @@ func main() {
 		data["Tab"] = -1
 		data["copyright"] = time.Now().Year()
 
-		if beego.RunMode == "dev" {
-			beego.BuildTemplate(beego.ViewsPath)
+		if beego.BConfig.RunMode == "dev" {
+			beego.BuildTemplate(beego.BConfig.WebConfig.ViewsPath)
 		}
-
 		newbytes := bytes.NewBufferString("")
-		if _, ok := beego.BeeTemplates[templateName]; !ok {
-			panic("can't find templatefile in the path:" + templateName)
-		}
-		err := beego.BeeTemplates[templateName].ExecuteTemplate(newbytes, templateName, data)
+		err := beego.ExecuteTemplate(newbytes, templateName, data)
 		if err != nil {
 			panic("template Execute err: " + err.Error())
 		}
@@ -156,7 +150,7 @@ func main() {
 		fmt.Fprint(rw, template.HTML(string(tplcontent)))
 	})
 
-	beego.Errorhandler("404", func(rw http.ResponseWriter, r *http.Request) {
+	beego.ErrorHandler("404", func(rw http.ResponseWriter, r *http.Request) {
 
 		templateName := "errors/404.tpl"
 
@@ -191,15 +185,12 @@ func main() {
 			}
 		}
 
-		if beego.RunMode == "dev" {
-			beego.BuildTemplate(beego.ViewsPath)
+		if beego.BConfig.RunMode == "dev" {
+			beego.BuildTemplate(beego.BConfig.WebConfig.ViewsPath)
 		}
 
 		newbytes := bytes.NewBufferString("")
-		if _, ok := beego.BeeTemplates[templateName]; !ok {
-			panic("can't find templatefile in the path:" + templateName)
-		}
-		err := beego.BeeTemplates[templateName].ExecuteTemplate(newbytes, templateName, data)
+		err := beego.ExecuteTemplate(newbytes, templateName, data)
 		if err != nil {
 			panic("template Execute err: " + err.Error())
 		}
@@ -207,7 +198,7 @@ func main() {
 		fmt.Fprint(rw, template.HTML(string(tplcontent)))
 	})
 
-	beego.Errorhandler("500", func(rw http.ResponseWriter, r *http.Request) {
+	beego.ErrorHandler("500", func(rw http.ResponseWriter, r *http.Request) {
 
 		templateName := "errors/500.tpl"
 
@@ -217,22 +208,19 @@ func main() {
 		data["Tab"] = -1
 		data["copyright"] = time.Now().Year()
 
-		if beego.RunMode == "dev" {
-			beego.BuildTemplate(beego.ViewsPath)
+		if beego.BConfig.RunMode == "dev" {
+			beego.BuildTemplate(beego.BConfig.WebConfig.ViewsPath)
 		}
 
 		newbytes := bytes.NewBufferString("")
-		if _, ok := beego.BeeTemplates[templateName]; !ok {
-			panic("can't find templatefile in the path:" + templateName)
-		}
-		err := beego.BeeTemplates[templateName].ExecuteTemplate(newbytes, templateName, data)
+		err := beego.ExecuteTemplate(newbytes, templateName, data)
 		if err != nil {
 			panic("template Execute err: " + err.Error())
 		}
 		tplcontent, _ := ioutil.ReadAll(newbytes)
 		fmt.Fprint(rw, template.HTML(string(tplcontent)))
 	})
-	beego.Errorhandler("550", func(rw http.ResponseWriter, r *http.Request) {
+	beego.ErrorHandler("550", func(rw http.ResponseWriter, r *http.Request) {
 
 		templateName := "errors/550.tpl"
 
@@ -245,15 +233,12 @@ func main() {
 
 		data["xsrf_token"] = r.Form.Get("xsrf")
 
-		if beego.RunMode == "dev" {
-			beego.BuildTemplate(beego.ViewsPath)
+		if beego.BConfig.RunMode == "dev" {
+			beego.BuildTemplate(beego.BConfig.WebConfig.ViewsPath)
 		}
 
 		newbytes := bytes.NewBufferString("")
-		if _, ok := beego.BeeTemplates[templateName]; !ok {
-			panic("can't find templatefile in the path:" + templateName)
-		}
-		err := beego.BeeTemplates[templateName].ExecuteTemplate(newbytes, templateName, data)
+		err := beego.ExecuteTemplate(newbytes, templateName, data)
 		if err != nil {
 			panic("template Execute err: " + err.Error())
 		}

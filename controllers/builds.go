@@ -99,7 +99,7 @@ func (this *BuildsController) Get() {
 	this.Data["Page"] = page
 	this.Data["NextPage"] = page + 1
 	this.Data["Pages"] = totalpages
-	this.TplNames = "builds/builds_list.tpl"
+	this.TplName = "builds/builds_list.tpl"
 }
 
 // REJECTED BUILDS
@@ -157,7 +157,7 @@ func (this *RejectedController) Get() {
 	this.Data["Page"] = page
 	this.Data["NextPage"] = page + 1
 	this.Data["Pages"] = totalpages
-	this.TplNames = "builds/builds_list.tpl"
+	this.TplName = "builds/builds_list.tpl"
 }
 
 // PUBLISHED BUILDS
@@ -221,7 +221,7 @@ func (this *PublishedController) Get() {
 	this.Data["Page"] = page
 	this.Data["NextPage"] = page + 1
 	this.Data["Pages"] = totalpages
-	this.TplNames = "builds/builds_list.tpl"
+	this.TplName = "builds/builds_list.tpl"
 }
 
 // TESTING BUILDS
@@ -271,7 +271,7 @@ func (this *TestingController) Get() {
 	this.Data["Packages"] = packages
 	this.Data["PkgKarma"] = pkgkarma
 	this.Data["Entries"] = num
-	this.TplNames = "builds/generic_list.tpl"
+	this.TplName = "builds/generic_list.tpl"
 }
 
 //
@@ -411,7 +411,7 @@ func (this *BuildController) Get() {
 		this.Data["Tab"] = 4
 	}
 	this.Data["Package"] = pkg
-	this.TplNames = "builds/build.tpl"
+	this.TplName = "builds/build.tpl"
 }
 
 func (this *BuildController) Post() {
