@@ -1,0 +1,11 @@
+package: github.com/robxu9/kahinah
+import:
+- package: github.com/astaxie/beego
+  subpackages:
+  - orm
+- package: github.com/go-sql-driver/mysql
+- package: github.com/mattn/go-sqlite3
+- package: github.com/pmylund/go-cache
+- package: menteslibres.net/gosexy/dig
+- package: menteslibres.net/gosexy/to
+- package: github.com/markbates/goth
