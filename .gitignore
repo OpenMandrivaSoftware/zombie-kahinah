@@ -1,0 +1,6 @@
+kahinah
+conf/*
+!conf/*.conf.example
+news.txt
+*~
+data.sqlite
