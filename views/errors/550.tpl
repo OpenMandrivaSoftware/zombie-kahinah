@@ -2,7 +2,7 @@
 
       <!-- Jumbotron -->
       <div class="jumbotron">
-        <h1>Yikes! You can't go further!</h1>
+        <h1>550.</h1>
         <p class="lead">You're missing the <code>{{.Permission}}</code> permission.</p>
         <p class="lead">...are you sure you logged in?</p>
         <br/>

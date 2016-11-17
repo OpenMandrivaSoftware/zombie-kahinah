@@ -2,17 +2,17 @@
 
       <!-- Jumbotron -->
       <div class="jumbotron">
-        <h1>OpenMandriva Update System</h1>
-        <p class="lead">Kahinah, the OpenMandriva Update System, is a versatile tool that hooks into <a href="//abf.io">ABF</a>, allowing package developers to focus on developing more without worrying about breakage.</p>
-        <p><a class="btn btn-lg btn-success" href="{{url "/builds/testing"}}" role="button">Recent Builds</a> <a class="btn btn-lg btn-default" href="{{url "/advisories"}}" role="button">Advisories</a> <a class="btn btn-lg btn-warning" href="{{url "/vtests"}}" role="button">Virtual Testing</a></p>
+        <h1>Kahinah, the OpenMandriva Update System</h1>
+        <p class="lead">This is Kahinah v3 (now termed Zombie-Kahinah), which hooks into <a href="//abf.openmandriva.org">ABF</a>, allowing developers and daredevil users to test updates before they are pushed to live.</p>
+        <p><a class="btn btn-lg btn-success" href="{{url "/builds/testing"}}" role="button">Recent Builds</a></p>
       </div>
 
       <!-- Infos -->
       <div class="row">
         <div class="col-lg-6">
-          <h2>This is ALPHA quality.</h2>
-          <p class="text-danger">This tool has not undergone extensive usage nor testing. Caution is advised. If any updates are not pushed or go missing, please alert OpenMandriva QA.</p>
-          <p><a class="btn btn-primary" href="{{url "/about"}}" role="button">Contact &raquo;</a></p>
+          <h2>This is an unsupported tool.</h2>
+          <p class="text-danger">While this tool has been extensively used, it is scheduled to be deprecated. Caution is advised. If any updates are not pushed or go missing, please alert OpenMandriva QA.</p>
+          <p><a class="btn btn-primary" href="mailto:qa@openmandriva.org" role="button">Contact &raquo;</a></p>
         </div>
         <div class="col-lg-6">
           <h2>News</h2>
