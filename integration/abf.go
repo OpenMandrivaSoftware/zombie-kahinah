@@ -105,11 +105,11 @@ func (a ABF) handleResponse(resp *http.Response, testing bool) error {
 		asserted := v.(map[string]interface{})
 		id := dig.Uint64(&asserted, "id")
 
-		num, err := o.QueryTable(new(models.BuildList)).Filter("HandleId__icontains", id).Count()
+		num, err := o.QueryTable(new(models.BuildList)).Filter("HandleId__icontains", id).Filter("Status", models.STATUS_TESTING).Count()
 		if num <= 0 || err != nil {
 			json, err := a.getJSONList(id)
 			if err != nil {
-				log.Printf("abf: error retrieving build list json %s: %s\n", id, err)
+				log.Printf("abf: error retrieving build list json %v: %v\n", id, err)
 				continue
 			}
 
@@ -152,7 +152,7 @@ func (a ABF) handleResponse(resp *http.Response, testing bool) error {
 
 			list, err := a.makeBuildList(json)
 			if err != nil {
-				log.Printf("abf: Error retrieving build list %s: %s\n", id, err)
+				log.Printf("abf: Error retrieving build list %v: %v\n", id, err)
 				continue
 			}
 
@@ -163,7 +163,7 @@ func (a ABF) handleResponse(resp *http.Response, testing bool) error {
 
 			_, err = o.Insert(list)
 			if err != nil {
-				log.Printf("abf: Error saving build list %s: %s\n", id, err)
+				log.Printf("abf: Error saving build list %v: %v\n", id, err)
 				continue
 			}
 
