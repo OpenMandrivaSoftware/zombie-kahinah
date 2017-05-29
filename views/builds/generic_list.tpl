@@ -111,7 +111,7 @@
                 <td>{{.Submitter.Email | emailat}}</td>
                 <td>{{.Platform}}/{{.Repo}}</td>
                 <td>{{$karma := mapaccess .Id $out.PkgKarma}}<img src="{{if eq $karma "0"}}//b.repl.ca/v1/karma-   {{$karma}}-yellow.png{{else}}{{if lt $karma "0"}}//b.repl.ca/v1/karma-  -{{$karma}}-orange.png{{else}}{{if gt $karma "0"}}//b.repl.ca/v1/karma- +{{$karma}}-yellowgreen.png{{end}}{{end}}{{end}}" alt="{{$karma}}"></td>
-                <td data-type="time" original-time="{{.BuildDate}}">{{.BuildDate}}</td>
+                <td data-type="time" original-time="{{.BuildDate | iso8601}}">{{.BuildDate | iso8601}}</td>
               </tr>
               {{end}}
             {{end}}
@@ -125,7 +125,7 @@
       $(function() {
           $("td[data-type='time']").each(function() {
               var node = $(this);
-              node.attr("moment-time", moment(node.text()).fromNow());
+              node.attr("moment-time", moment(node.attr("original-time")).fromNow());
               node.text(node.attr("moment-time"));
               node.hover(function() {
                   node.text(node.attr("original-time"));

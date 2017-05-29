@@ -28,7 +28,7 @@
                     {{if eq .Status "rejected"}}//b.repl.ca/v1/status-REJECTED-red.png{{else}}
                     {{if eq .Status "published"}}//b.repl.ca/v1/status-PUBLISHED-brightgreen.png{{else}}
                     //b.repl.ca/v1/status-UNKNOWN-lightgrey.png{{end}}{{end}}{{end}}" alt="{{.Status}}"></td>
-                <td data-type="time">{{.Updated}}</td>
+                <td data-type="time" original-time="{{.Updated | iso8601}}">{{.Updated | iso8601}}</td>
               </tr>
               {{end}}
             {{end}}

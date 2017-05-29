@@ -90,6 +90,10 @@ func main() {
 		return fmt.Sprintf("%dd %02dhrs", int(hrs)/24, int(hrs)%24)
 	})
 
+	beego.AddFuncMap("iso8601", func(t time.Time) string {
+		return t.Format(time.RFC3339)
+	})
+
 	beego.AddFuncMap("emailat", func(s string) string {
 		return strings.Replace(s, "@", " [@T] ", -1)
 	})
