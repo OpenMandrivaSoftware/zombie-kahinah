@@ -37,7 +37,6 @@ type GithubLogoutController struct {
 }
 
 func (this *GithubLogoutController) Get() {
-	this.DelSession("github")
 	this.DestroySession()
 	this.Ctx.WriteString("OK")
 }

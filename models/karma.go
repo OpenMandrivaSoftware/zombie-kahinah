@@ -9,6 +9,8 @@ const (
 	KARMA_BLOCK      = "v"
 	KARMA_PUSH       = "^"
 	KARMA_NONE       = "_"
+	KARMA_FINALIZE   = "o"
+	KARMA_CLEAR      = "x"
 )
 
 type Karma struct {

@@ -62,7 +62,7 @@
                       <option value="Neutral">Clear/Neutral</option>
                       <option value="Down">Reject</option>
                       <option value="Up">Accept</option>
-                      <option value="Maintainer">Maintainer (if available - fails if not)</option>
+                      <option value="Maintainer">Maintainer Accept (if possible)</option>
                       {{if .QAControls}}
                       <option value=""> --- </option>
                       <option value="QABlock">QA Block</option>
@@ -70,16 +70,18 @@
                       <option value="QAClear">QA Clear</option>
                       {{end}}
                       <option value=""> --- </option>
-                      <option value="Finalize">Finalize</option>
+                      <option value="Finalize">Finalize (if possible)</option>
                   </select>
               </div>
               <div class="form-group">
                   <input type="text" id="bulkComments" class="form-control" placeholder="Comments (Optional)">
               </div>
               <button type="submit" id="bulkApply" class="form-control btn btn-default">Apply</button>
+              <div class="form-group pull-right">
+                  <a id="bulkSelectAll">Select All</a>
+                  <a id="bulkDeselectAll">Deselect All</a>
+              </div>
           </form>
-          <button id="bulkSelectAll" class="pull-right btn btn-default">Select All</button>
-          <button id="bulkDeselectAll" class="pull-right btn btn-default">Deselect All</button>
       </div>
       {{end}}
 
@@ -101,7 +103,7 @@
               {{range .}}
               <tr>
                 {{if $out.LoggedIn}}
-                <td><div class="checkbox"><label><input is-id type="checkbox" name="id" value="{{.Id}}">{{.Id}}</label></td>
+                <td><div class="checkbox" style="margin: 0 0 0 0;"><label><input is-id type="checkbox" name="id" value="{{.Id}}">{{.Id}}</label></td>
                 {{else}}
                 <td>{{.Id}}</td>
                 {{end}}

@@ -69,7 +69,7 @@
 
           <!-- login -->
           <div class="navbar-right">
-            <a href="{{url "/user"}}"><p class="navbar-text" id="persona-user"></p></a>
+            <a href="{{url "/user"}}"><p class="navbar-text">{{.user_login}}</p></a>
             {{if .xsrf_token}}
             <button type="button" class="btn btn-primary navbar-btn" style="display: none" id="login">Github Login</button><button type="button" class="btn btn-warning navbar-btn" style="display: none" id="logout">Logout</button>
             {{end}}

@@ -2,19 +2,15 @@ $("document").ready(function(){
 
   $("#logout").hide();
 
-  function loggedIn(email){
+  function loggedIn(){
     $("#login").hide();
     $("#logout").show();
-    $("#persona-user").text(email);
   }
 
   function loggedOut(){
     $("#logout").hide();
     $("#login").show();
-    $("#persona-user").text("");
   }
-
-  var user = null;
 
   $.ajax({
     url: window.urlPrefix + '/auth/check',
@@ -23,8 +19,7 @@ $("document").ready(function(){
         loggedOut();
       }
       else {
-        loggedIn(res);
-        user = res;
+        loggedIn();
       }
     },
     async: false

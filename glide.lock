@@ -1,11 +1,12 @@
-hash: 4f790dc1780a11201c79311c28de58fd1f3fc4f0d9d35bd7615c41c596ea71ae
-updated: 2016-11-16T00:27:43.233386303-05:00
+hash: c90cf2f3f8bcc66a9c09bdcd9422b231319a7685bec16f86a1bde657fe78870c
+updated: 2017-05-29T01:50:24.213772041-04:00
 imports:
 - name: github.com/astaxie/beego
-  version: b635af5a8cd798ae9ede1adb6f9472fa87361168
+  version: cab8458c1c4a5a3b4bf5192922be620e6dede15b
   subpackages:
   - config
   - context
+  - context/param
   - grace
   - logs
   - orm
@@ -13,31 +14,31 @@ imports:
   - toolbox
   - utils
 - name: github.com/go-sql-driver/mysql
-  version: 8f6c67f0228a4a6a962008d6c3d1e694e4532e71
+  version: 382e13d099fcf5f5994290892ab258fbebbdc5e3
 - name: github.com/golang/protobuf
-  version: 4a5b3fd3082794b57dadf9f962fffa5ecad974d5
+  version: 9f174c986221c608fb5143bd623b6076a71feae3
   subpackages:
   - proto
 - name: github.com/markbates/goth
-  version: fe9a7e293372a2839c9e9eb3bbb48bb977f2cfa8
+  version: c04864b86001affde4fd368f960f698a27fb9d13
   subpackages:
   - providers/github
 - name: github.com/mattn/go-sqlite3
-  version: fba66eb11643069e747022997e9be3b502b2c6fb
+  version: cf7286f069c3ef596efcc87781a4653a2e7607bd
 - name: github.com/pmylund/go-cache
-  version: 1881a9bccb818787f68c52bfba648c6cf34c34fa
+  version: 7ac151875ffb48b9f3ccce9ea20f020b0c1596c8
 - name: github.com/satori/go.uuid
-  version: b061729afc07e77a8aa4fad0a2fd840958f1942a
+  version: 5bf94b69c6b68ee1b541973bb8e1144db23a194b
 - name: golang.org/x/net
-  version: e57319ce2bbbdc638169d4756554fbaedc805399
+  version: 41bba8d80bbfab43231ffdf4c210037baae5f6a3
   subpackages:
   - context
 - name: golang.org/x/oauth2
-  version: d5040cddfc0da40b408c9a1da4728662435176a9
+  version: f047394b6d14284165300fd82dad67edb3a4d7f6
   subpackages:
   - internal
 - name: google.golang.org/appengine
-  version: ca59ef35f409df61fa4a5f8290ff289b37eccfb8
+  version: a2f4131514e563cedfdb6e7d267df9ad48591e93
   subpackages:
   - internal
   - internal/base

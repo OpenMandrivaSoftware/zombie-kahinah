@@ -13,6 +13,10 @@ import (
 
 	"github.com/markbates/goth"
 	"golang.org/x/oauth2"
+	"fmt"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
 )
 
 const (
@@ -26,9 +30,10 @@ const (
 // one manually.
 func New(clientKey, secret, callbackURL string, scopes ...string) *Provider {
 	p := &Provider{
-		ClientKey:   clientKey,
-		Secret:      secret,
-		CallbackURL: callbackURL,
+		ClientKey:           clientKey,
+		Secret:              secret,
+		CallbackURL:         callbackURL,
+		providerName:        "facebook",
 	}
 	p.config = newConfig(p, scopes)
 	return p
@@ -36,15 +41,26 @@ func New(clientKey, secret, callbackURL string, scopes ...string) *Provider {
 
 // Provider is the implementation of `goth.Provider` for accessing Facebook.
 type Provider struct {
-	ClientKey   string
-	Secret      string
-	CallbackURL string
-	config      *oauth2.Config
+	ClientKey    string
+	Secret       string
+	CallbackURL  string
+	HTTPClient   *http.Client
+	config       *oauth2.Config
+	providerName string
 }
 
 // Name is the name used to retrieve this provider later.
 func (p *Provider) Name() string {
-	return "facebook"
+	return p.providerName
+}
+
+// SetName is to update the name of the provider (needed in case of multiple providers of 1 type)
+func (p *Provider) SetName(name string) {
+	p.providerName = name
+}
+
+func (p *Provider) Client() *http.Client {
+	return goth.HTTPClientWithFallBack(p.HTTPClient)
 }
 
 // Debug is a no-op for the facebook package.
@@ -68,14 +84,27 @@ func (p *Provider) FetchUser(session goth.Session) (goth.User, error) {
 		ExpiresAt:   sess.ExpiresAt,
 	}
 
-	response, err := http.Get(endpointProfile + "&access_token=" + url.QueryEscape(sess.AccessToken))
+	if user.AccessToken == "" {
+		// data is not yet retrieved since accessToken is still empty
+		return user, fmt.Errorf("%s cannot get user information without accessToken", p.providerName)
+	}
+
+	// always add appsecretProof to make calls more protected
+	// https://github.com/markbates/goth/issues/96
+	// https://developers.facebook.com/docs/graph-api/securing-requests
+	hash := hmac.New(sha256.New, []byte(p.Secret))
+	hash.Write([]byte(sess.AccessToken))
+	appsecretProof := hex.EncodeToString(hash.Sum(nil))
+
+	response, err := p.Client().Get(endpointProfile + "&access_token=" + url.QueryEscape(sess.AccessToken) + "&appsecret_proof=" + appsecretProof)
 	if err != nil {
-		if response != nil {
-			response.Body.Close()
-		}
 		return user, err
 	}
 	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		return user, fmt.Errorf("%s responded with a %d trying to fetch user information", p.providerName, response.StatusCode)
+	}
 
 	bits, err := ioutil.ReadAll(response.Body)
 	if err != nil {
@@ -100,7 +129,7 @@ func userFromReader(reader io.Reader, user *goth.User) error {
 		FirstName string `json:"first_name"`
 		LastName  string `json:"last_name"`
 		Link      string `json:"link"`
-		Picture   struct {
+		Picture struct {
 			Data struct {
 				URL string `json:"url"`
 			} `json:"data"`

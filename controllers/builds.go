@@ -361,6 +361,10 @@ func (this *BuildController) Get() {
 			} else {
 				continue // no karma and no comment? useless
 			}
+		case models.KARMA_FINALIZE:
+			pair.Value = 3
+		case models.KARMA_CLEAR:
+			pair.Value = 4
 		}
 
 		votes = append(votes, pair)
@@ -391,6 +395,20 @@ func (this *BuildController) Get() {
 
 		if models.PermCheck(&this.Controller, models.PERMISSION_QA) {
 			this.Data["QAControls"] = true
+		}
+
+		upthreshold, err := beego.AppConfig.Int64("karma::upperkarma")
+		if err != nil {
+			panic(err)
+		}
+
+		downthreshold, err := beego.AppConfig.Int64("karma::lowerkarma")
+		if err != nil {
+			panic(err)
+		}
+
+		if totalKarma >= int(upthreshold) || totalKarma <= int(downthreshold) {
+			this.Data["FinalizeControls"] = true
 		}
 
 	}
@@ -427,7 +445,7 @@ func (this *BuildController) Post() {
 	id := to.Uint64(this.Ctx.Input.Param(":id"))
 
 	postType := this.GetString("type")
-	if postType != "Neutral" && postType != "Up" && postType != "Down" && postType != "Maintainer" && postType != "QABlock" && postType != "QAPush" {
+	if postType != "Neutral" && postType != "Up" && postType != "Down" && postType != "Maintainer" && postType != "QABlock" && postType != "QAPush" && postType != "QAClear" && postType != "Finalize" {
 		this.Abort("400")
 	}
 
@@ -461,7 +479,7 @@ func (this *BuildController) Post() {
 				this.Abort("400")
 			}
 		}
-	} else if postType == "QABlock" || postType == "QAPush" {
+	} else if postType == "QABlock" || postType == "QAPush" || postType == "QAClear" {
 		models.PermAbortCheck(&this.Controller, models.PERMISSION_QA)
 	} else {
 		// whitelist stuff
@@ -474,6 +492,32 @@ func (this *BuildController) Post() {
 				this.Get()
 				return
 			}
+		}
+	}
+
+	if postType == "Finalize" {
+		karmaTotal := getTotalKarma(id)
+
+		upthreshold, err := beego.AppConfig.Int64("karma::upperkarma")
+		if err != nil {
+			panic(err)
+		}
+
+		downthreshold, err := beego.AppConfig.Int64("karma::lowerkarma")
+		if err != nil {
+			panic(err)
+		}
+
+		if karmaTotal >= int(upthreshold) {
+			pkg.Status = models.STATUS_PUBLISHED
+			o.Update(&pkg)
+			go integration.Publish(&pkg)
+		} else if karmaTotal <= int(downthreshold) {
+			pkg.Status = models.STATUS_REJECTED
+			o.Update(&pkg)
+			go integration.Reject(&pkg)
+		} else {
+			this.Abort("400") // bad request - we can't finalize!
 		}
 	}
 
@@ -491,32 +535,20 @@ func (this *BuildController) Post() {
 		userkarma.Vote = models.KARMA_PUSH
 	} else if postType == "Neutral" {
 		userkarma.Vote = models.KARMA_NONE
-	} else {
+	} else if postType == "Down" {
 		userkarma.Vote = models.KARMA_DOWN
+	} else if postType == "QAClear" {
+		userkarma.Vote = models.KARMA_CLEAR
+	} else {
+		userkarma.Vote = models.KARMA_FINALIZE
 	}
+
 	userkarma.Comment = comment
 	o.Insert(&userkarma)
 
-	karmaTotal := getTotalKarma(id)
-
-	upthreshold, err := beego.AppConfig.Int64("karma::upperkarma")
-	if err != nil {
-		panic(err)
-	}
-
-	downthreshold, err := beego.AppConfig.Int64("karma::lowerkarma")
-	if err != nil {
-		panic(err)
-	}
-
-	if karmaTotal >= int(upthreshold) {
-		pkg.Status = models.STATUS_PUBLISHED
-		o.Update(&pkg)
-		go integration.Publish(&pkg)
-	} else if karmaTotal <= int(downthreshold) {
+	if postType == "QAClear" {
 		pkg.Status = models.STATUS_REJECTED
 		o.Update(&pkg)
-		go integration.Reject(&pkg)
 	}
 
 	this.Get()
@@ -551,6 +583,10 @@ func getTotalKarma(id uint64) int {
 			totalKarma -= int(block_karma)
 		case models.KARMA_PUSH:
 			totalKarma += int(push_karma)
+		case models.KARMA_CLEAR:
+			fallthrough
+		case models.KARMA_FINALIZE:
+			continue // we ignore these kinds of karma
 		}
 
 		set.Add(v.User.Email)

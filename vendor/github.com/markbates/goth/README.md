@@ -1,4 +1,4 @@
-# Goth: Multi-Provider Authentication for Go [![Build Status](https://travis-ci.org/markbates/goth.svg)](https://travis-ci.org/markbates/goth)
+# Goth: Multi-Provider Authentication for Go [![GoDoc](https://godoc.org/github.com/markbates/goth?status.svg)](https://godoc.org/github.com/markbates/goth) [![Build Status](https://travis-ci.org/markbates/goth.svg)](https://travis-ci.org/markbates/goth)
 
 Package goth provides a simple, clean, and idiomatic way to write authentication
 packages for Go web applications.
@@ -7,10 +7,6 @@ Unlike other similar packages, Goth, lets you write OAuth, OAuth2, or any other
 protocol providers, as long as they implement the `Provider` and `Session` interfaces.
 
 This package was inspired by [https://github.com/intridea/omniauth](https://github.com/intridea/omniauth).
-
-## Docs
-
-The API docs can be found at [http://godoc.org/github.com/markbates/goth](http://godoc.org/github.com/markbates/goth)
 
 ## Installation
 
@@ -21,12 +17,14 @@ $ go get github.com/markbates/goth
 ## Supported Providers
 
 * Amazon
+* Auth0
 * Bitbucket
 * Box
 * Cloud Foundry
 * Dailymotion
 * Deezer
 * Digital Ocean
+* Discord
 * Dropbox
 * Facebook
 * Fitbit
@@ -39,7 +37,9 @@ $ go get github.com/markbates/goth
 * Intercom
 * Lastfm
 * Linkedin
+* Meetup
 * OneDrive
+* OpenID Connect (auto discovery)
 * Paypal
 * SalesForce
 * Slack
@@ -51,6 +51,7 @@ $ go get github.com/markbates/goth
 * Twitter
 * Uber
 * Wepay
+* Xero
 * Yahoo
 * Yammer
 
@@ -58,6 +59,26 @@ $ go get github.com/markbates/goth
 
 See the [examples](examples) folder for a working application that lets users authenticate
 through Twitter, Facebook, Google Plus etc.
+
+To run the example either clone the source from GitHub
+
+```text
+$ git clone git@github.com:markbates/goth.git
+```
+or use
+```text
+$ go get github.com/markbates/goth
+```
+```text
+$ cd goth/examples
+$ go get -v
+$ go build 
+$ ./examples
+```
+
+Now open up your browser and go to [http://localhost:3000](http://localhost:3000) to see the example.
+
+To actually use the different providers, please make sure you set environment variables. Example given in the examples/main.go file
 
 ## Issues
 
@@ -79,36 +100,46 @@ Would I love to see more providers? Certainly! Would you love to contribute one?
 
 * Mark Bates
 * Tyler Bunnell
+* Corey McGrillis
+* willemvd
 * Rakesh Goyal
 * Andy Grunwald
+* Glenn Walker
 * Kevin Fitzpatrick
-* Sharad Ganapathy
 * Ben Tranter
+* Sharad Ganapathy
+* Andrew Chilton
 * sharadgana
-* Geoff Franks
-* Zac Bergquist
+* Aurorae
 * Craig P Jolicoeur
-* Corey McGrillis
-* Rafael Quintela
+* Zac Bergquist
+* Geoff Franks
+* Raphael Geronimi
 * Noah Shibley
+* lumost
 * oov
+* Felix Lamouroux
+* Rafael Quintela
 * Tyler
 * DenSm
+* Samy KACIMI
 * dante gray
-* Raphael Geronimi
-* Glenn Walker
 * Noah
-* bryanl
+* Jacob Walker
+* Marin Martinic
+* Roy
+* Omni Adams
+* Sasa Brankovic
+* dkhamsing
+* Dante Swift
+* Attila Domokos
+* Albin Gilles
+* Syed Zubairuddin
 * Johnny Boursiquot
+* Jerome Touffe-Blin
+* bryanl
 * Masanobu YOSHIOKA
 * Jonathan Hall
 * HaiMing.Yin
-* Omni Adams
-* Albin Gilles
-* Dante Swift
-* Felix Lamouroux
-* dkhamsing
-* Jacob Walker
-* Jerome Touffe-Blin
-* Samy Kacimi
-
+* Sairam Kunala
+* Regan Ashworth

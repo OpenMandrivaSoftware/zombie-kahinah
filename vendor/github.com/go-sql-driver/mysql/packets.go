@@ -25,9 +25,9 @@ import (
 
 // Read packet to buffer 'data'
 func (mc *mysqlConn) readPacket() ([]byte, error) {
-	var payload []byte
+	var prevData []byte
 	for {
-		// Read packet header
+		// read packet header
 		data, err := mc.buf.readNext(4)
 		if err != nil {
 			errLog.Print(err)
@@ -35,16 +35,10 @@ func (mc *mysqlConn) readPacket() ([]byte, error) {
 			return nil, driver.ErrBadConn
 		}
 
-		// Packet Length [24 bit]
+		// packet length [24 bit]
 		pktLen := int(uint32(data[0]) | uint32(data[1])<<8 | uint32(data[2])<<16)
 
-		if pktLen < 1 {
-			errLog.Print(ErrMalformPkt)
-			mc.Close()
-			return nil, driver.ErrBadConn
-		}
-
-		// Check Packet Sync [8 bit]
+		// check packet sync [8 bit]
 		if data[3] != mc.sequence {
 			if data[3] > mc.sequence {
 				return nil, ErrPktSyncMul
@@ -53,7 +47,20 @@ func (mc *mysqlConn) readPacket() ([]byte, error) {
 		}
 		mc.sequence++
 
-		// Read packet body [pktLen bytes]
+		// packets with length 0 terminate a previous packet which is a
+		// multiple of (2^24)−1 bytes long
+		if pktLen == 0 {
+			// there was no previous packet
+			if prevData == nil {
+				errLog.Print(ErrMalformPkt)
+				mc.Close()
+				return nil, driver.ErrBadConn
+			}
+
+			return prevData, nil
+		}
+
+		// read packet body [pktLen bytes]
 		data, err = mc.buf.readNext(pktLen)
 		if err != nil {
 			errLog.Print(err)
@@ -61,18 +68,17 @@ func (mc *mysqlConn) readPacket() ([]byte, error) {
 			return nil, driver.ErrBadConn
 		}
 
-		isLastPacket := (pktLen < maxPacketSize)
+		// return data if this was the last packet
+		if pktLen < maxPacketSize {
+			// zero allocations for non-split packets
+			if prevData == nil {
+				return data, nil
+			}
 
-		// Zero allocations for non-splitting packets
-		if isLastPacket && payload == nil {
-			return data, nil
+			return append(prevData, data...), nil
 		}
 
-		payload = append(payload, data...)
-
-		if isLastPacket {
-			return payload, nil
-		}
+		prevData = append(prevData, data...)
 	}
 }
 
@@ -480,21 +486,23 @@ func (mc *mysqlConn) readResultOK() ([]byte, error) {
 				plugin := string(data[1:pluginEndIndex])
 				cipher := data[pluginEndIndex+1 : len(data)-1]
 
-				if plugin == "mysql_old_password" {
+				switch plugin {
+				case "mysql_old_password":
 					// using old_passwords
 					return cipher, ErrOldPassword
-				} else if plugin == "mysql_clear_password" {
+				case "mysql_clear_password":
 					// using clear text password
 					return cipher, ErrCleartextPassword
-				} else if plugin == "mysql_native_password" {
+				case "mysql_native_password":
 					// using mysql default authentication method
 					return cipher, ErrNativePassword
-				} else {
+				default:
 					return cipher, ErrUnknownPlugin
 				}
-			} else {
-				return nil, ErrOldPassword
 			}
+
+			// https://dev.mysql.com/doc/internals/en/connection-phase-packets.html#packet-Protocol::OldAuthSwitchRequest
+			return nil, ErrOldPassword
 
 		default: // Error otherwise
 			return nil, mc.handleErrorPacket(data)
@@ -577,8 +585,8 @@ func (mc *mysqlConn) handleOkPacket(data []byte) error {
 
 	// server_status [2 bytes]
 	mc.status = readStatus(data[1+n+m : 1+n+m+2])
-	if err := mc.discardResults(); err != nil {
-		return err
+	if mc.status&statusMoreResultsExists != 0 {
+		return nil
 	}
 
 	// warning count [2 bytes]
@@ -691,6 +699,10 @@ func (mc *mysqlConn) readColumns(count int) ([]mysqlField, error) {
 func (rows *textRows) readRow(dest []driver.Value) error {
 	mc := rows.mc
 
+	if rows.rs.done {
+		return io.EOF
+	}
+
 	data, err := mc.readPacket()
 	if err != nil {
 		return err
@@ -700,15 +712,11 @@ func (rows *textRows) readRow(dest []driver.Value) error {
 	if data[0] == iEOF && len(data) == 5 {
 		// server_status [2 bytes]
 		rows.mc.status = readStatus(data[3:])
-		err = rows.mc.discardResults()
-		if err == nil {
-			err = io.EOF
-		} else {
-			// connection unusable
-			rows.mc.Close()
+		rows.rs.done = true
+		if !rows.HasNextResultSet() {
+			rows.mc = nil
 		}
-		rows.mc = nil
-		return err
+		return io.EOF
 	}
 	if data[0] == iERR {
 		rows.mc = nil
@@ -729,7 +737,7 @@ func (rows *textRows) readRow(dest []driver.Value) error {
 				if !mc.parseTime {
 					continue
 				} else {
-					switch rows.columns[i].fieldType {
+					switch rows.rs.columns[i].fieldType {
 					case fieldTypeTimestamp, fieldTypeDateTime,
 						fieldTypeDate, fieldTypeNewDate:
 						dest[i], err = parseDateTime(
@@ -1090,8 +1098,6 @@ func (mc *mysqlConn) discardResults() error {
 			if err := mc.readUntilEOF(); err != nil {
 				return err
 			}
-		} else {
-			mc.status &^= statusMoreResultsExists
 		}
 	}
 	return nil
@@ -1109,15 +1115,11 @@ func (rows *binaryRows) readRow(dest []driver.Value) error {
 		// EOF Packet
 		if data[0] == iEOF && len(data) == 5 {
 			rows.mc.status = readStatus(data[3:])
-			err = rows.mc.discardResults()
-			if err == nil {
-				err = io.EOF
-			} else {
-				// connection unusable
-				rows.mc.Close()
+			rows.rs.done = true
+			if !rows.HasNextResultSet() {
+				rows.mc = nil
 			}
-			rows.mc = nil
-			return err
+			return io.EOF
 		}
 		rows.mc = nil
 
@@ -1138,14 +1140,14 @@ func (rows *binaryRows) readRow(dest []driver.Value) error {
 		}
 
 		// Convert to byte-coded string
-		switch rows.columns[i].fieldType {
+		switch rows.rs.columns[i].fieldType {
 		case fieldTypeNULL:
 			dest[i] = nil
 			continue
 
 		// Numeric Types
 		case fieldTypeTiny:
-			if rows.columns[i].flags&flagUnsigned != 0 {
+			if rows.rs.columns[i].flags&flagUnsigned != 0 {
 				dest[i] = int64(data[pos])
 			} else {
 				dest[i] = int64(int8(data[pos]))
@@ -1154,7 +1156,7 @@ func (rows *binaryRows) readRow(dest []driver.Value) error {
 			continue
 
 		case fieldTypeShort, fieldTypeYear:
-			if rows.columns[i].flags&flagUnsigned != 0 {
+			if rows.rs.columns[i].flags&flagUnsigned != 0 {
 				dest[i] = int64(binary.LittleEndian.Uint16(data[pos : pos+2]))
 			} else {
 				dest[i] = int64(int16(binary.LittleEndian.Uint16(data[pos : pos+2])))
@@ -1163,7 +1165,7 @@ func (rows *binaryRows) readRow(dest []driver.Value) error {
 			continue
 
 		case fieldTypeInt24, fieldTypeLong:
-			if rows.columns[i].flags&flagUnsigned != 0 {
+			if rows.rs.columns[i].flags&flagUnsigned != 0 {
 				dest[i] = int64(binary.LittleEndian.Uint32(data[pos : pos+4]))
 			} else {
 				dest[i] = int64(int32(binary.LittleEndian.Uint32(data[pos : pos+4])))
@@ -1172,7 +1174,7 @@ func (rows *binaryRows) readRow(dest []driver.Value) error {
 			continue
 
 		case fieldTypeLongLong:
-			if rows.columns[i].flags&flagUnsigned != 0 {
+			if rows.rs.columns[i].flags&flagUnsigned != 0 {
 				val := binary.LittleEndian.Uint64(data[pos : pos+8])
 				if val > math.MaxInt64 {
 					dest[i] = uint64ToString(val)
@@ -1186,7 +1188,7 @@ func (rows *binaryRows) readRow(dest []driver.Value) error {
 			continue
 
 		case fieldTypeFloat:
-			dest[i] = float32(math.Float32frombits(binary.LittleEndian.Uint32(data[pos : pos+4])))
+			dest[i] = math.Float32frombits(binary.LittleEndian.Uint32(data[pos : pos+4]))
 			pos += 4
 			continue
 
@@ -1226,10 +1228,10 @@ func (rows *binaryRows) readRow(dest []driver.Value) error {
 			case isNull:
 				dest[i] = nil
 				continue
-			case rows.columns[i].fieldType == fieldTypeTime:
+			case rows.rs.columns[i].fieldType == fieldTypeTime:
 				// database/sql does not support an equivalent to TIME, return a string
 				var dstlen uint8
-				switch decimals := rows.columns[i].decimals; decimals {
+				switch decimals := rows.rs.columns[i].decimals; decimals {
 				case 0x00, 0x1f:
 					dstlen = 8
 				case 1, 2, 3, 4, 5, 6:
@@ -1237,7 +1239,7 @@ func (rows *binaryRows) readRow(dest []driver.Value) error {
 				default:
 					return fmt.Errorf(
 						"protocol error, illegal decimals value %d",
-						rows.columns[i].decimals,
+						rows.rs.columns[i].decimals,
 					)
 				}
 				dest[i], err = formatBinaryDateTime(data[pos:pos+int(num)], dstlen, true)
@@ -1245,10 +1247,10 @@ func (rows *binaryRows) readRow(dest []driver.Value) error {
 				dest[i], err = parseBinaryDateTime(num, data[pos:], rows.mc.cfg.Loc)
 			default:
 				var dstlen uint8
-				if rows.columns[i].fieldType == fieldTypeDate {
+				if rows.rs.columns[i].fieldType == fieldTypeDate {
 					dstlen = 10
 				} else {
-					switch decimals := rows.columns[i].decimals; decimals {
+					switch decimals := rows.rs.columns[i].decimals; decimals {
 					case 0x00, 0x1f:
 						dstlen = 19
 					case 1, 2, 3, 4, 5, 6:
@@ -1256,7 +1258,7 @@ func (rows *binaryRows) readRow(dest []driver.Value) error {
 					default:
 						return fmt.Errorf(
 							"protocol error, illegal decimals value %d",
-							rows.columns[i].decimals,
+							rows.rs.columns[i].decimals,
 						)
 					}
 				}
@@ -1272,7 +1274,7 @@ func (rows *binaryRows) readRow(dest []driver.Value) error {
 
 		// Please report if this happens!
 		default:
-			return fmt.Errorf("unknown field type %d", rows.columns[i].fieldType)
+			return fmt.Errorf("unknown field type %d", rows.rs.columns[i].fieldType)
 		}
 	}
 

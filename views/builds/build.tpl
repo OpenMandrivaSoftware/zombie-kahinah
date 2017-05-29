@@ -25,16 +25,6 @@
                   <td>{{.Package.Repo}}</td>
                 </tr>
                 <tr>
-                  <td><b>Update Type<b></td>
-                  <td>
-                    {{if eq .Package.Type "bugfix"}}<i class="fa fa-bug"></i>{{end}}
-                    {{if eq .Package.Type "security"}}<i class="fa fa-shield"></i>{{end}}
-                    {{if eq .Package.Type "enhancement"}}<i class="fa fa-gift"></i>{{end}}
-                    {{if eq .Package.Type "recommended"}}<i class="fa fa-star-o"></i>{{end}}
-                    {{if eq .Package.Type "newpackage"}}<i class="fa fa-plus-square-o"></i>{{end}}
-                    {{.Package.Type}}</td>
-                </tr>
-                <tr>
                   <td><b>URL<b></td>
                   <td><a href="{{.Url}}">{{.Url}}</a></td>
                 </tr>
@@ -105,7 +95,7 @@
               <table class="table table-condensed table-responsive table-bordered">
                 {{with .Votes}}
                   {{range .}}
-                <tr class="{{if eq .Value 1}}success{{end}}{{if eq .Value 2}}danger{{end}}"><td>{{.Key.User.Email | emailat}}</td><td>{{if .Key.Comment}}{{.Key.Comment}}{{else}}<em>No Comment.</em>{{end}}</td><td>{{if .Key.Time}}{{.Key.Time | since}}{{else}}[voted before timekeeping began]{{end}}</td></tr>
+                <tr class="{{if eq .Value 1}}success{{end}}{{if eq .Value 2}}danger{{end}}{{if eq .Value 3}}info{{end}}{{if eq .Value 4}}warning{{end}}"><td>{{.Key.User.Email | emailat}}</td><td>{{if .Key.Comment}}{{.Key.Comment}}{{else}}<em>No Comment.</em>{{end}}</td><td>{{if .Key.Time}}{{.Key.Time | since}}{{else}}[voted before timekeeping began]{{end}}</td></tr>
                   {{end}}
                 {{end}}
               </table>
@@ -153,12 +143,20 @@
                     <label class="btn btn-warning">
                       <input type="radio" name="type" id="voteQAUp" value="QAPush"><i class="fa fa-lg fa-thumbs-o-up"></i> QA Push
                     </label>
+                    <label class="btn btn-warning">
+                      <input type="radio" name="type" id="voteQAClear" value="QAClear"><i class="fa fa-lg fa-scissors"></i> QA Clear
+                    </label>
+                    {{end}}
+                    {{if .FinalizeControls}}
+                    <label class="btn btn-info">
+                        <input type="radio" name="type" id="voteFinalize" value="Finalize"><i class="fa fa-lg fa-flag-o"></i> Finalize
+                    </label>
                     {{end}}
                   </div>
                 </div>
                 {{if .MaintainerControls}}{{if not .MaintainerTime}}
-                <div class="alert alert-info"><b>This is your update!</b> Unfortunately, you need to wait {{.MaintainerHoursNeeded}} hours since the Build Date until you can activate Maintainer Push.</div>
-                {{else}}<div class="alert alert-info"><b>This is your update!</b> You can activate Maintainer Push now.</div>{{end}}{{end}}
+                <div class="alert alert-info"><b>This is your update!</b> Unfortunately, you need to wait {{.MaintainerHoursNeeded}} hours since the Build Date until you can activate Maintainer Accept.</div>
+                {{else}}<div class="alert alert-info"><b>This is your update!</b> You can activate Maintainer Accept now.</div>{{end}}{{end}}
                 <div id="voteModalAlertPlaceholder"></div>
                 <div class="modal-body">
                   <div class="input-group">
@@ -179,9 +177,13 @@
       <script>
         $("input").change(function() {
           if ($("#voteQADown").is(':checked')) {
-            $('#voteModalAlertPlaceholder').html('<div class="alert alert-danger"><b>Heads up!</b> This adds -9999 karma and is <b>UNREVERSABLE</b>!</div>');
+            $('#voteModalAlertPlaceholder').html('<div class="alert alert-danger"><b>Heads up!</b> This adds -9999 karma and allows the build to be finalized immediately!</div>');
           } else if ($("#voteQAUp").is(':checked')) {
-            $('#voteModalAlertPlaceholder').html('<div class="alert alert-warning"><b>Heads up!</b> This adds 9999 karma and is <b>UNREVERSABLE</b>!</div>');
+            $('#voteModalAlertPlaceholder').html('<div class="alert alert-warning"><b>Heads up!</b> This adds 9999 karma and allows the build to be finalized immediately!</div>');
+          } else if ($("#voteQAClear").is(':checked')) {
+            $('#voteModalAlertPlaceholder').html('<div class="alert alert-warning"><b>Beware:</b> This removes this update from being controlled by Kahinah. Useful if someone has bypassed via ABF.</div>');
+          } else if ($("#voteFinalize").is(':checked')) {
+            $('#voteModalAlertPlaceholder').html('<div class="alert alert-warning">After you finalize this update, it will be pushed to the main updates repositories. No more changes can be made.</div>');
           } else {
             $('#voteModalAlertPlaceholder').html('')
           }
