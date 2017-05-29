@@ -1,7 +1,7 @@
 {{template "header.tpl" .}}
 
       <div class="page-header">
-        <h1>{{.Title}} <small>Eh, nothing special.</small></h1>
+        <h1>{{.Title}}</h1>
       </div>
 
       <div class="row table-responsive">
@@ -12,7 +12,6 @@
               <th>Name</th>
               <th>Submitter</th>
               <th>For</th>
-              <th>Type</th>
               <th>Status</th>
               <th>Updated</th>
             </tr>
@@ -21,20 +20,15 @@
             {{with .Packages}}
               {{range .}}
               <tr>
-                <td><a href="{{urldata "/builds/{{.Id}}" .}}">UPDATE-{{.BuildDate.Year}}-{{.Id}}</a></td>
+                <td><a href="{{urldata "/builds/{{.Id}}" .}}">{{.BuildDate.Year}}-{{.Id}}</a></td>
                 <td><a href="{{urldata "/builds/{{.Id}}" .}}">{{.Name}}/{{.Architecture}}</a></td>
                 <td>{{.Submitter.Email | emailat}}</td>
                 <td>{{.Platform}}/{{.Repo}}</td>
-                <td>{{if eq .Type "bugfix"}}<i class="fa fa-bug"></i>{{end}}
-                    {{if eq .Type "security"}}<i class="fa fa-shield"></i>{{end}}
-                    {{if eq .Type "enhancement"}}<i class="fa fa-gift"></i>{{end}}
-                    {{if eq .Type "recommended"}}<i class="fa fa-star-o"></i>{{end}}
-                    {{if eq .Type "newpackage"}}<i class="fa fa-plus-square-o"></i>{{end}}</td>
                 <td><img src="{{if eq .Status "testing"}}//b.repl.ca/v1/status-TESTING-yellow.png{{else}}
                     {{if eq .Status "rejected"}}//b.repl.ca/v1/status-REJECTED-red.png{{else}}
                     {{if eq .Status "published"}}//b.repl.ca/v1/status-PUBLISHED-brightgreen.png{{else}}
                     //b.repl.ca/v1/status-UNKNOWN-lightgrey.png{{end}}{{end}}{{end}}" alt="{{.Status}}"></td>
-                <td>{{.Updated | since}}</td>
+                <td data-type="time">{{.Updated}}</td>
               </tr>
               {{end}}
             {{end}}
@@ -57,5 +51,19 @@
           </form>
         </div>
       </div>
+
+      <script type="text/javascript">
+        $("td[data-type='time']").each(function() {
+            var node = $(this);
+            node.attr("original-time", node.text());
+            node.attr("moment-time", moment(node.text()).fromNow());
+            node.text(node.attr("moment-time"));
+            node.hover(function() {
+                node.text(node.attr("original-time"));
+            }, function() {
+                node.text(node.attr("moment-time"));
+            });
+        });
+      </script>
 
 {{template "footer.tpl" .}}

@@ -8,7 +8,7 @@
 
       <script>
         // With customizations
-        $(document).ready(function() { 
+        $(document).ready(function() {
           $.extend($.tablesorter.themes.bootstrap, {
             // these classes are added to the table. To see other table classes available,
             // look here: http://twitter.github.com/bootstrap/base-css.html#tables
@@ -33,29 +33,64 @@
             headerTemplate: "{content} {icon}",
             widgets: ["uitheme", "filter", "zebra"],
             textExtraction: {
-              3: function(node, table, cellIndex) {
+              4: function(node, table, cellIndex) {
                 return $(node).find("div").text();
               },
-              4: function(node, table, cellIndex) {
+              5: function(node, table, cellIndex) {
                 return $(node).find("img").attr("alt");
               },
+              6: function(node, table, cellIndex) {
+                  return $(node).attr("original-time");
+              }
             },
           });
         });
       </script>
 
       <div class="page-header">
-        <h1>{{.Title}} <small>much sortable such searchable wow</small></h1>
+        <h1>{{.Title}}</h1>
       </div>
+
+      {{if .LoggedIn}}
+      <div class="row">
+          <form id="bulkForm" class="form-inline">
+              <div class="form-group">
+                  <p class="form-control-static"><strong>Bulk Actions: </strong></p>
+              </div>
+              <div class="form-group">
+                  <select id="bulkAction" class="form-control" name="action">
+                      <option value="Neutral">Clear/Neutral</option>
+                      <option value="Down">Reject</option>
+                      <option value="Up">Accept</option>
+                      <option value="Maintainer">Maintainer (if available - fails if not)</option>
+                      {{if .QAControls}}
+                      <option value=""> --- </option>
+                      <option value="QABlock">QA Block</option>
+                      <option value="QAPush">QA Push</option>
+                      <option value="QAClear">QA Clear</option>
+                      {{end}}
+                      <option value=""> --- </option>
+                      <option value="Finalize">Finalize</option>
+                  </select>
+              </div>
+              <div class="form-group">
+                  <input type="text" id="bulkComments" class="form-control" placeholder="Comments (Optional)">
+              </div>
+              <button type="submit" id="bulkApply" class="form-control btn btn-default">Apply</button>
+          </form>
+          <button id="bulkSelectAll" class="pull-right btn btn-default">Select All</button>
+          <button id="bulkDeselectAll" class="pull-right btn btn-default">Deselect All</button>
+      </div>
+      {{end}}
 
       <div class="row table-responsive">
         <table class="table tablesorter" id="pkgtable">
           <thead>
             <tr>
+              <th>ID</th>
               <th>Name</th>
               <th>Submitter</th>
               <th>For</th>
-              <th>Type</th>
               <th>Karma</th>
               <th>Build Date</th>
             </tr>
@@ -65,17 +100,115 @@
             {{with .Packages}}
               {{range .}}
               <tr>
+                {{if $out.LoggedIn}}
+                <td><div class="checkbox"><label><input is-id type="checkbox" name="id" value="{{.Id}}">{{.Id}}</label></td>
+                {{else}}
+                <td>{{.Id}}</td>
+                {{end}}
                 <td><a href="{{urldata "/builds/{{.Id}}" .}}">{{.Name}}/{{.Architecture}}</a></td>
                 <td>{{.Submitter.Email | emailat}}</td>
                 <td>{{.Platform}}/{{.Repo}}</td>
-                <td><i class="fa {{if eq .Type "bugfix"}}fa-bug{{end}}{{if eq .Type "security"}}fa-shield{{end}}{{if eq .Type "enhancement"}}fa-gift{{end}}{{if eq .Type "recommended"}}fa-star{{end}}{{if eq .Type "newpackage"}}fa-plus-square{{end}}" title="{{.Type}}"></i><div style="display: none;">{{.Type}}</div></td>
                 <td>{{$karma := mapaccess .Id $out.PkgKarma}}<img src="{{if eq $karma "0"}}//b.repl.ca/v1/karma-   {{$karma}}-yellow.png{{else}}{{if lt $karma "0"}}//b.repl.ca/v1/karma-  -{{$karma}}-orange.png{{else}}{{if gt $karma "0"}}//b.repl.ca/v1/karma- +{{$karma}}-yellowgreen.png{{end}}{{end}}{{end}}" alt="{{$karma}}"></td>
-                <td>{{.BuildDate | since}}</td>
+                <td data-type="time" original-time="{{.BuildDate}}">{{.BuildDate}}</td>
               </tr>
               {{end}}
             {{end}}
         </table>
-        <center><span class="label label-default">{{.Entries}} {{if eq .Entries 1}}entry{{else}}entries returned.{{end}}</span></center>
+        <center><span class="label label-default">{{.Entries}} {{if eq .Entries 1}}entry{{else}}entries{{end}} returned.</span></center>
       </div>
+
+      <div style="visibility:hidden;display:none;" id="bulkFrames"></div>
+
+      <script type="text/javascript">
+      $(function() {
+          $("td[data-type='time']").each(function() {
+              var node = $(this);
+              node.attr("moment-time", moment(node.text()).fromNow());
+              node.text(node.attr("moment-time"));
+              node.hover(function() {
+                  node.text(node.attr("original-time"));
+              }, function() {
+                  node.text(node.attr("moment-time"));
+              });
+          });
+
+          {{if .LoggedIn}}
+
+          var ids = [];
+          var failed = [];
+          var current = 0;
+
+          var handleNext = function() {
+              if (ids.length === 0) {
+                  if (failed.length > 0) {
+                      alert("failed to bulk action: " + failed);
+                  }
+
+                  window.location.reload(true);
+                  return;
+              }
+
+              current = ids.shift();
+              console.log("running " + current);
+              $("#bulkApply").text("Applying " + current + "...");
+
+              var bulkFrame = $("<iframe>", {src: "{{url "/builds/"}}" + current}).on("load", function() {
+                  this.contentWindow.$("#voteForm").append($("<input>", {type: 'hidden', name: 'type', value: $("#bulkAction").val()}));
+                  this.contentWindow.$("#voteForm").append($("<input>", {type: 'hidden', name: 'comment', value: $("#bulkComments").val()}));
+                  this.contentWindow.$("input[type=radio]").remove();
+                  this.contentWindow.$("input[type=text]").remove();
+
+                  $(this).off("load");
+                  $(this).on("load", function() {
+                      handleNext();
+                      bulkFrame.remove();
+                  });
+                  this.contentWindow.$("#voteForm").submit();
+              });
+
+              $("#bulkFrames").append(bulkFrame);
+          };
+
+          var running = false;
+
+          // for each checkbox, post to builds with the desired outcome
+          $("#bulkForm").submit(function(event) {
+              event.preventDefault();
+
+              if (running) { // we don't want to allow it to run again
+                  return;
+              }
+
+              if ($("#bulkAction").val() === '') {
+                  return;
+              }
+
+              $("[is-id]:checked").each(function() {
+                  ids.push($(this).val());
+              });
+
+              $("#bulkApply").prop('disabled', true);
+              $("#bulkApply").text("Please wait...");
+
+              running = true;
+
+              handleNext();
+          });
+
+          $("#bulkSelectAll").click(function() {
+              $("[is-id]").each(function() {
+                  $(this).prop('checked', true);
+              });
+          });
+
+          $("#bulkDeselectAll").click(function() {
+              $("[is-id]").each(function() {
+                  $(this).prop('checked', false);
+              });
+          });
+
+          {{end}}
+      });
+      </script>
 
 {{template "footer.tpl" .}}

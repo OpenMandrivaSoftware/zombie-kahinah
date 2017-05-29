@@ -16,11 +16,7 @@
         </div>
         <div class="col-lg-6">
           <h2>News</h2>
-          {{with .News}}
-            {{range .}}
-          <p>{{.}}</p>
-            {{end}}
-          {{end}}
+          <p>Not available.</p>
        </div>
       </div>
 

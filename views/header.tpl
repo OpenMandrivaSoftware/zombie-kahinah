@@ -31,9 +31,8 @@
     <script>window.urlPrefix = "{{url ""}}";</script>
     <script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
     <script src="{{url "/static/js/xsrf.js"}}"></script>
-
-    <script src="//login.persona.org/include.js"></script>
     <script src="{{url "/static/js/persona.js"}}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment-with-locales.min.js"></script>
 
   </head>
 

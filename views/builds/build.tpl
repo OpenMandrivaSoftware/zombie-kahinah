@@ -8,7 +8,7 @@
           {{if eq .Package.Status "published"}}<div class="panel panel-success">{{else}}
           <div class="panel panel-primary">{{end}}{{end}}{{end}}
             <div class="panel-heading">
-              <h1>{{.Package.Name}} <small>[{{.Package.Architecture}}] UPDATE-{{.Package.BuildDate.Year}}-{{.Package.Id}}</small><div class="pull-right">{{.Karma}} {{if .KarmaControls}}<a href="#" class="btn" data-toggle="modal" data-target="#voteModal"><i class="fa fa-3x {{if .UserVote}}fa-check-square-o{{else}}fa-pencil-square-o{{end}}"></i></a>{{end}}</div></h1>
+              <h1>{{.Package.Name}} <small>[{{.Package.Architecture}}] {{.Package.BuildDate.Year}}-{{.Package.Id}}</small><div class="pull-right">{{.Karma}} {{if .KarmaControls}}<a href="#" class="btn" data-toggle="modal" data-target="#voteModal"><i class="fa fa-3x {{if .UserVote}}fa-check-square-o{{else}}fa-pencil-square-o{{end}}"></i></a>{{end}}</div></h1>
             </div>
             <table class="table table-condensed">
               <tbody>
@@ -124,7 +124,7 @@
         <div class="modal-dialog">
           <center>
             <div class="modal-content">
-              <form class="form-inline" role="form" method="post">
+              <form class="form-inline" role="form" method="post" id="voteForm">
                 {{ .xsrf_data }}
                 <div class="modal-header">
                   <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>

@@ -1,12 +1,13 @@
 package controllers
 
 import (
-	"github.com/robxu9/zombie-kahinah/util"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"sort"
 	"time"
+
+	"github.com/robxu9/zombie-kahinah/util"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -264,6 +265,14 @@ func (this *TestingController) Get() {
 	}
 
 	sort.Sort(ByBuildDate(packages))
+
+	if models.IsLoggedIn(&this.Controller) != "" {
+		this.Data["LoggedIn"] = true
+	}
+
+	if models.PermCheck(&this.Controller, models.PERMISSION_QA) {
+		this.Data["QAControls"] = true
+	}
 
 	this.Data["Title"] = "Testing"
 	this.Data["Loc"] = 1
