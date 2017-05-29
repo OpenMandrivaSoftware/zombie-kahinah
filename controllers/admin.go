@@ -53,14 +53,7 @@ func (this *AdminController) Get() {
 	this.Data["Tab"] = -1
 
 	if this.GetString("email") != "" {
-		user := models.FindUserNoCreate(this.GetString("email"))
-		if user == nil {
-			flash := beego.NewFlash()
-			flash.Error("No such email " + this.GetString("email") + "!")
-			flash.Store(&this.Controller)
-		} else {
-			this.Data["User"] = user
-		}
+		this.Data["User"] = models.FindUser(this.GetString("email"))
 	}
 
 	perms := make(map[string][]string)
