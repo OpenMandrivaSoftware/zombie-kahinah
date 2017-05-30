@@ -65,6 +65,13 @@ func main() {
 
 	//
 	// --------------------------------------------------------------------
+	// AUDIT LOG
+	// --------------------------------------------------------------------
+	//
+	beego.Router(util.GetPrefixString("/audit"), &controllers.AuditController{})
+
+	//
+	// --------------------------------------------------------------------
 	// AUTHENTICATION [persona]
 	// --------------------------------------------------------------------
 	//
@@ -100,6 +107,28 @@ func main() {
 
 	beego.AddFuncMap("mapaccess", func(s interface{}, m map[string]string) string {
 		return m[to.String(s)]
+	})
+
+	beego.AddFuncMap("convertKarma", func(s string) string {
+		switch s {
+		case models.KARMA_BLOCK:
+			return "QA Block"
+		case models.KARMA_CLEAR:
+			return "QA Clear"
+		case models.KARMA_DOWN:
+			return "Downvote"
+		case models.KARMA_FINALIZE:
+			return "Finalize"
+		case models.KARMA_MAINTAINER:
+			return "Maintainer Vote"
+		case models.KARMA_NONE:
+			return "Neutral"
+		case models.KARMA_PUSH:
+			return "QA Push"
+		case models.KARMA_UP:
+			return "Upvote"
+		}
+		return "Unknown: " + s
 	})
 
 	beego.AddFuncMap("url", util.GetPrefixString)

@@ -64,6 +64,7 @@
                 <li{{if eq .Loc 1}}{{if eq .Tab 4}} class="active"{{end}}{{end}}><a href="{{url "/builds"}}">All</a></li>
               </ul>
             </li>
+            <li{{if eq .Loc 2}} class="active" {{end}}><a href="{{url "/audit"}}">Audit Log</a></li>
 
           </ul>
 

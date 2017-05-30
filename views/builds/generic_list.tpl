@@ -110,7 +110,7 @@
                 <td><a href="{{urldata "/builds/{{.Id}}" .}}">{{.Name}}/{{.Architecture}}</a></td>
                 <td>{{.Submitter.Email | emailat}}</td>
                 <td>{{.Platform}}/{{.Repo}}</td>
-                <td>{{$karma := mapaccess .Id $out.PkgKarma}}<img src="{{if eq $karma "0"}}//b.repl.ca/v1/karma-   {{$karma}}-yellow.png{{else}}{{if lt $karma "0"}}//b.repl.ca/v1/karma-  -{{$karma}}-orange.png{{else}}{{if gt $karma "0"}}//b.repl.ca/v1/karma- +{{$karma}}-yellowgreen.png{{end}}{{end}}{{end}}" alt="{{$karma}}"></td>
+                <td>{{$karma := mapaccess .Id $out.PkgKarma}}<img src="{{if eq $karma "0"}}//img.shields.io/badge/karma-   {{$karma}}-yellow.png{{else}}{{if lt $karma "0"}}//img.shields.io/badge/karma-  -{{$karma}}-orange.png{{else}}{{if gt $karma "0"}}//img.shields.io/badge/karma- +{{$karma}}-yellowgreen.png{{end}}{{end}}{{end}}" alt="{{$karma}}"></td>
                 <td data-type="time" original-time="{{.BuildDate | iso8601}}">{{.BuildDate | iso8601}}</td>
               </tr>
               {{end}}

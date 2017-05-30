@@ -8,27 +8,22 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Update ID</th>
-              <th>Name</th>
-              <th>Submitter</th>
-              <th>For</th>
-              <th>Status</th>
-              <th>Updated</th>
+              <th>Update</th>
+              <th>User</th>
+              <th>Vote</th>
+              <th>Comment</th>
+              <th>Committed</th>
             </tr>
           </thead>
           <tbody>
-            {{with .Packages}}
+            {{with .Karma}}
               {{range .}}
               <tr>
-                <td><a href="{{urldata "/builds/{{.Id}}" .}}">{{.BuildDate.Year}}-{{.Id}}</a></td>
-                <td><a href="{{urldata "/builds/{{.Id}}" .}}">{{.Name}}/{{.Architecture}}</a></td>
-                <td>{{.Submitter.Email | emailat}}</td>
-                <td>{{.Platform}}/{{.Repo}}</td>
-                <td><img src="{{if eq .Status "testing"}}//img.shields.io/badge/status-TESTING-yellow.png{{else}}
-                    {{if eq .Status "rejected"}}//img.shields.io/badge/status-REJECTED-red.png{{else}}
-                    {{if eq .Status "published"}}//img.shields.io/badge/status-PUBLISHED-brightgreen.png{{else}}
-                    //img.shields.io/badge/status-UNKNOWN-lightgrey.png{{end}}{{end}}{{end}}" alt="{{.Status}}"></td>
-                <td data-type="time" original-time="{{.Updated | iso8601}}">{{.Updated | iso8601}}</td>
+                <td><a href="{{urldata "/builds/{{.List.Id}}" .}}">{{.List.BuildDate.Year}}-{{.List.Id}}: {{.List.Name}}/{{.List.Architecture}}</a></td>
+                <td>{{.User.Email | emailat}}</td>
+                <td>{{.Vote | convertKarma}}</td>
+                <td>{{.Comment}}</td>
+                <td data-type="time" original-time="{{.Time | iso8601}}">{{.Time | iso8601}}</td>
               </tr>
               {{end}}
             {{end}}
