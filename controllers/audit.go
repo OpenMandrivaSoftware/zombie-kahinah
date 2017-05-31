@@ -50,6 +50,7 @@ func (this *AuditController) Get() {
 
 	for _, v := range karma {
 		o.LoadRelated(v, "List")
+		o.LoadRelated(v.List, "Packages")
 		o.LoadRelated(v, "User")
 	}
 

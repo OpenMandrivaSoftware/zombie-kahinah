@@ -19,7 +19,7 @@
             {{with .Karma}}
               {{range .}}
               <tr>
-                <td><a href="{{urldata "/builds/{{.List.Id}}" .}}">{{.List.BuildDate.Year}}-{{.List.Id}}: {{.List.Name}}/{{.List.Architecture}}</a></td>
+                <td><a href="{{urldata "/builds/{{.List.Id}}" .}}">{{.List.BuildDate.Year}}-{{.List.Id}}: {{.List.Name}}-{{.List.SourceEVR}} ({{.List.Architecture}})</a></td>
                 <td>{{.User.Email | emailat}}</td>
                 <td>{{.Vote | convertKarma}}</td>
                 <td>{{.Comment}}</td>
