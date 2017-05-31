@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -47,6 +48,19 @@ type BuildList struct {
 	HandleProject  string `xml:"handle>project" orm:"type(text)"`
 	HandleCommitId string `xml:"handle>commitid" orm:"type(text)"`
 	// end handler specifics
+}
+
+func (l *BuildList) SourceEVR() string {
+	for _, v := range l.Packages {
+		if v.Type == "source" {
+			if v.Epoch > 0 {
+				return fmt.Sprintf("%v:%v-%v", v.Epoch, v.Version, v.Release)
+			}
+			return fmt.Sprintf("%v-%v", v.Version, v.Release)
+		}
+	}
+
+	return "unknown"
 }
 
 type BuildListPkg struct {

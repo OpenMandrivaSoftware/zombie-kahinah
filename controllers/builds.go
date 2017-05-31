@@ -87,6 +87,7 @@ func (this *BuildsController) Get() {
 	}
 
 	for _, v := range packages {
+		o.LoadRelated(v, "Packages")
 		o.LoadRelated(v, "Submitter")
 	}
 
@@ -145,6 +146,7 @@ func (this *RejectedController) Get() {
 	}
 
 	for _, v := range packages {
+		o.LoadRelated(v, "Packages")
 		o.LoadRelated(v, "Submitter")
 	}
 
@@ -209,6 +211,7 @@ func (this *PublishedController) Get() {
 	}
 
 	for _, v := range packages {
+		o.LoadRelated(v, "Packages")
 		o.LoadRelated(v, "Submitter")
 	}
 
@@ -261,6 +264,7 @@ func (this *TestingController) Get() {
 
 		pkgkarma[to.String(v.Id)] = to.String(totalKarma)
 
+		o.LoadRelated(v, "Packages")
 		o.LoadRelated(v, "Submitter")
 	}
 
@@ -438,6 +442,7 @@ func (this *BuildController) Get() {
 		this.Data["Tab"] = 4
 	}
 	this.Data["Package"] = pkg
+	this.Data["SourceEVR"] = pkg.SourceEVR()
 	this.TplName = "builds/build.tpl"
 }
 

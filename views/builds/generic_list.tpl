@@ -107,7 +107,7 @@
                 {{else}}
                 <td>{{.Id}}</td>
                 {{end}}
-                <td><a href="{{urldata "/builds/{{.Id}}" .}}">{{.Name}}/{{.Architecture}}</a></td>
+                <td><a href="{{urldata "/builds/{{.Id}}" .}}">{{.Name}}-{{.SourceEVR}} ({{.Architecture}})</a></td>
                 <td>{{.Submitter.Email | emailat}}</td>
                 <td>{{.Platform}}/{{.Repo}}</td>
                 <td>{{$karma := mapaccess .Id $out.PkgKarma}}<img src="{{if eq $karma "0"}}//img.shields.io/badge/karma-   {{$karma}}-yellow.png{{else}}{{if lt $karma "0"}}//img.shields.io/badge/karma-  -{{$karma}}-orange.png{{else}}{{if gt $karma "0"}}//img.shields.io/badge/karma- +{{$karma}}-yellowgreen.png{{end}}{{end}}{{end}}" alt="{{$karma}}"></td>

@@ -21,7 +21,7 @@
               {{range .}}
               <tr>
                 <td><a href="{{urldata "/builds/{{.Id}}" .}}">{{.BuildDate.Year}}-{{.Id}}</a></td>
-                <td><a href="{{urldata "/builds/{{.Id}}" .}}">{{.Name}}/{{.Architecture}}</a></td>
+                <td><a href="{{urldata "/builds/{{.Id}}" .}}">{{.Name}}-{{.SourceEVR}} ({{.Architecture}})</a></td>
                 <td>{{.Submitter.Email | emailat}}</td>
                 <td>{{.Platform}}/{{.Repo}}</td>
                 <td><img src="{{if eq .Status "testing"}}//img.shields.io/badge/status-TESTING-yellow.png{{else}}
