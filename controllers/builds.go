@@ -524,6 +524,8 @@ func (this *BuildController) Post() {
 		} else {
 			this.Abort("400") // bad request - we can't finalize!
 		}
+
+		go util.MailModel(&pkg)
 	}
 
 	var userkarma models.Karma

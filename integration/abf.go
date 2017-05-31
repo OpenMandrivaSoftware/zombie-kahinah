@@ -226,8 +226,6 @@ func (a ABF) Url(m *models.BuildList) string {
 }
 
 func (a ABF) Publish(m *models.BuildList) error {
-	go util.MailModel(m)
-
 	for _, v := range strings.Split(m.HandleId, ";") {
 
 		id := to.Uint64(v)
@@ -250,8 +248,6 @@ func (a ABF) Publish(m *models.BuildList) error {
 }
 
 func (a ABF) Reject(m *models.BuildList) error {
-	go util.MailModel(m)
-
 	for _, v := range strings.Split(m.HandleId, ";") {
 		id := to.Uint64(v)
 		req, err := http.NewRequest("PUT", ABF_URL+"/build_lists/"+to.String(id)+"/reject_publish.json", nil)

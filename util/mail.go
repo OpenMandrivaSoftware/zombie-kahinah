@@ -10,6 +10,7 @@ import (
 	"net/smtp"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -35,52 +36,16 @@ var (
 
 	mail_to = beego.AppConfig.String("mail::to")
 
-	model_template       = template.New("email model template")
-	maint_model_template = template.New("email maintainer model template")
+	model_template       = "emails/regular.tpl"
+	maint_model_template = "emails/maint.tpl"
+	digest_template      = "emails/digest.tpl"
 	mail_template        = template.New("email full template")
+
+	digestModelsIntake = make(chan *models.BuildList, 100)
+	digestModelsQueue  = []*models.BuildList{}
 )
 
 func init() {
-	model_template = template.Must(model_template.Parse(`Hello,
-
-The following package has been {{.Action}}:
-
-Id:		{{.Package.BuildDate.Year}}-{{.Package.Id}}
-Name:	{{.Package.Name}}/{{.Package.Architecture}}
-For:		{{.Package.Platform}}/{{.Package.Repo}}
-Type:	{{.Package.Type}}
-Built:	{{.Package.BuildDate}}
-
-{{if ne .Package.Status "testing"}}Comments on the package:
-{{range .Package.Karma}}
-* {{.User.Email}} voted {{.Vote}} and commented: "{{.Comment}}".
-{{end}}{{end}}
-
-More information available at the Kahinah website:
-{{.KahinahUrl}}/builds/{{.Package.Id}}
-`))
-
-	maint_model_template = template.Must(maint_model_template.Parse(`Hello,
-
-The package you have built has been {{.Action}}:
-
-Id:		UPDATE-{{.Package.BuildDate.Year}}-{{.Package.Id}}
-Name:	{{.Package.Name}}/{{.Package.Architecture}}
-For:		{{.Package.Platform}}/{{.Package.Repo}}
-Type:	{{.Package.Type}}
-Built:	{{.Package.BuildDate}}
-
-{{if eq .Package.Status "testing"}}Be sure to vote for your own package - and remember that QA
-may need more information: the comments section has input that
-might prove valuable.{{else}}Comments on the package:
-{{range .Package.Karma}}
-* {{.User.Email}} voted {{.Vote}} and commented: "{{.Comment}}".
-{{end}}{{end}}
-
-More information available at the Kahinah website:
-{{.KahinahUrl}}/builds/{{.Package.Id}}
-`))
-
 	mail_template = template.Must(mail_template.Parse(`From: {{.From}}
 To: {{.To}}
 Subject: {{.Subject}}
@@ -93,6 +58,58 @@ Content-type: text/plain
 This email was sent by Kahinah, the OpenMandriva QA bot.
 Inbound email to this account is not monitored.
 `))
+
+	// digest model queue
+	go func() {
+		select {
+		case <-time.After(12 * time.Hour):
+			MailDigest()
+		case in := <-digestModelsIntake:
+			digestModelsQueue = append(digestModelsQueue, in)
+		}
+	}()
+}
+
+func MailDigest() {
+	defer func() {
+		digestModelsQueue = []*models.BuildList{}
+	}()
+
+	if !mail_enabled || mail_to == "" {
+		return // Disabled
+	}
+
+	// just in case
+	o := orm.NewOrm()
+
+	// make sure we have information
+	for _, v := range digestModelsQueue {
+		if v.Packages == nil {
+			o.LoadRelated(v, "Packages")
+		}
+	}
+
+	kahinahURL := outwardUrl
+	if outwardPrefix != "" {
+		kahinahURL = outwardUrl + "/" + outwardPrefix
+	}
+
+	data := map[string]interface{}{
+		"kahinahURL": kahinahURL,
+		"Lists":      digestModelsQueue,
+	}
+
+	var digestBuf bytes.Buffer
+	if err := beego.ExecuteTemplate(&digestBuf, digest_template, data); err != nil {
+		log.Printf("[mail] digest template failed: %v\n", err)
+		return
+	}
+
+	subject := fmt.Sprintf("[kahinah] 12-hour digest at %v", time.Now())
+
+	if err := MailTo(subject, digestBuf.String(), mail_to); err != nil {
+		log.Printf("[mail] digest email failed: %v\n", err)
+	}
 }
 
 func MailTo(subject, content, to string) error {
@@ -174,6 +191,10 @@ func ourMail(addr string, a smtp.Auth, from string, to []string, msg []byte) err
 }
 
 func MailModel(model *models.BuildList) {
+	defer func() {
+		digestModelsIntake <- model
+	}()
+
 	if model.Submitter == nil {
 		o := orm.NewOrm()
 		o.LoadRelated(model, "Submitter")
@@ -197,7 +218,7 @@ func MailModel(model *models.BuildList) {
 	case models.STATUS_PUBLISHED:
 		action = "published"
 	case models.STATUS_REJECTED:
-		action = "rejected"
+		action = "rejected/cleared"
 	}
 
 	data["Action"] = action
@@ -208,21 +229,24 @@ func MailModel(model *models.BuildList) {
 	}
 	data["Package"] = model
 
-	var modelTemplateBuf bytes.Buffer
-	model_template.Execute(&modelTemplateBuf, data)
+	// var modelTemplateBuf bytes.Buffer
+	// beego.ExecuteTemplate(&modelTemplateBuf, model_template, data)
 
 	var maintTemplateBuf bytes.Buffer
-	maint_model_template.Execute(&maintTemplateBuf, data)
-
-	subject := fmt.Sprintf("[kahinah] %s/%s (%s) %s", model.Name, model.Architecture, to.String(model.Id), action)
-
-	err := Mail(subject, modelTemplateBuf.String())
-	if err != nil {
-		log.Printf("[mail] model email failed: %s\n", err)
+	if err := beego.ExecuteTemplate(&maintTemplateBuf, maint_model_template, data); err != nil {
+		log.Printf("[mail] maint template failed: %v\n", err)
+		return
 	}
 
-	err = MailTo(subject, maintTemplateBuf.String(), model.Submitter.Email)
+	subject := fmt.Sprintf("[kahinah] %v-%v (%v) %v %v", model.Name, model.SourceEVR(), model.Architecture, model.Id, action)
+
+	// err := Mail(subject, modelTemplateBuf.String())
+	// if err != nil {
+	// 	log.Printf("[mail] model email failed: %s\n", err)
+	// }
+
+	err := MailTo(subject, maintTemplateBuf.String(), model.Submitter.Email)
 	if err != nil {
-		log.Printf("[mail] maint email failed: %s\n", err)
+		log.Printf("[mail] maint email failed: %v\n", err)
 	}
 }
