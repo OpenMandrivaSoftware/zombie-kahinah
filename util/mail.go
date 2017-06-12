@@ -31,10 +31,11 @@ var (
 	mail_pass    = beego.AppConfig.String("mail::smtp_pass")
 	mail_domain  = beego.AppConfig.String("mail::smtp_domain")
 	mail_host    = beego.AppConfig.String("mail::smtp_host")
-	mail_verify  = to.Bool(beego.AppConfig.String("mail::smtp_tls_verify"))
+	mail_verify  = beego.AppConfig.String("mail::smtp_tls_verify")
 	mail_email   = mail.Address{"Kahinah QA Bot", beego.AppConfig.String("mail::smtp_email")}
 
-	mail_to = beego.AppConfig.String("mail::to")
+	mail_to    = beego.AppConfig.String("mail::to")
+	mail_maint = to.Bool(beego.AppConfig.String("mail::maint"))
 
 	model_template       = "emails/regular.tpl"
 	maint_model_template = "emails/maint.tpl"
@@ -61,16 +62,25 @@ Inbound email to this account is not monitored.
 
 	// digest model queue
 	go func() {
-		select {
-		case <-time.After(12 * time.Hour):
-			MailDigest()
-		case in := <-digestModelsIntake:
-			digestModelsQueue = append(digestModelsQueue, in)
+		timeWait := time.After(12 * time.Hour)
+		for {
+			select {
+			case <-timeWait:
+				MailDigest()
+				timeWait = time.After(12 * time.Hour)
+			case in := <-digestModelsIntake:
+				digestModelsQueue = append(digestModelsQueue, in)
+			}
 		}
 	}()
 }
 
 func MailDigest() {
+	if len(digestModelsQueue) == 0 {
+		// nothing to do
+		return
+	}
+
 	defer func() {
 		digestModelsQueue = []*models.BuildList{}
 	}()
@@ -156,7 +166,10 @@ func ourMail(addr string, a smtp.Auth, from string, to []string, msg []byte) err
 	//	return err
 	//}
 	if ok, _ := c.Extension("STARTTLS"); ok {
-		if err = c.StartTLS(&tls.Config{InsecureSkipVerify: !mail_verify}); err != nil {
+		if err = c.StartTLS(&tls.Config{
+			InsecureSkipVerify: mail_verify == "",
+			ServerName:         mail_verify,
+		}); err != nil {
 			return err
 		}
 	}
@@ -232,21 +245,23 @@ func MailModel(model *models.BuildList) {
 	// var modelTemplateBuf bytes.Buffer
 	// beego.ExecuteTemplate(&modelTemplateBuf, model_template, data)
 
-	var maintTemplateBuf bytes.Buffer
-	if err := beego.ExecuteTemplate(&maintTemplateBuf, maint_model_template, data); err != nil {
-		log.Printf("[mail] maint template failed: %v\n", err)
-		return
-	}
+	if mail_maint {
+		var maintTemplateBuf bytes.Buffer
+		if err := beego.ExecuteTemplate(&maintTemplateBuf, maint_model_template, data); err != nil {
+			log.Printf("[mail] maint template failed: %v\n", err)
+			return
+		}
 
-	subject := fmt.Sprintf("[kahinah] %v-%v (%v) %v %v", model.Name, model.SourceEVR(), model.Architecture, model.Id, action)
+		subject := fmt.Sprintf("[kahinah] %v-%v (%v) %v %v", model.Name, model.SourceEVR(), model.Architecture, model.Id, action)
 
-	// err := Mail(subject, modelTemplateBuf.String())
-	// if err != nil {
-	// 	log.Printf("[mail] model email failed: %s\n", err)
-	// }
+		// err := Mail(subject, modelTemplateBuf.String())
+		// if err != nil {
+		// 	log.Printf("[mail] model email failed: %s\n", err)
+		// }
 
-	err := MailTo(subject, maintTemplateBuf.String(), model.Submitter.Email)
-	if err != nil {
-		log.Printf("[mail] maint email failed: %v\n", err)
+		err := MailTo(subject, maintTemplateBuf.String(), model.Submitter.Email)
+		if err != nil {
+			log.Printf("[mail] maint email failed: %v\n", err)
+		}
 	}
 }
