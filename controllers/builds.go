@@ -13,7 +13,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	"github.com/robxu9/zombie-kahinah/integration"
 	"github.com/robxu9/zombie-kahinah/models"
-	"menteslibres.net/gosexy/to"
+	"github.com/gosexy/to"
 )
 
 const (
