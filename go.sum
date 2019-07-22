@@ -19,6 +19,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/pmylund/go-cache v0.0.0-20170418232947-7ac151875ffb h1:cuHYdSZ1pKUyWt/DIOgAcPRGSF28A7V7MjObb0VcFVI=
 github.com/pmylund/go-cache v0.0.0-20170418232947-7ac151875ffb/go.mod h1:hmz95dGvINpbRZGsqPcd7B5xXY5+EKb5PpGhQY3NTHk=
+github.com/robxu9/zombie-kahinah v0.0.0-20170612023957-e9593d08e0cc h1:bROfkYz8PLB4LpgGvH/caRxo2i5QLwMKHFgSMHpTYw8=
+github.com/robxu9/zombie-kahinah v0.0.0-20170612023957-e9593d08e0cc/go.mod h1:XV/l78WqwU4hhSPDHzlsO2dmURgAsWgc82T4bcHlYL0=
 github.com/satori/go.uuid v0.0.0-20170321230731-5bf94b69c6b6 h1:7PFDlUz5/yGp8w21PuZGgEfN7ZF7OXvgAIDjwih82Gs=
 github.com/satori/go.uuid v0.0.0-20170321230731-5bf94b69c6b6/go.mod h1:dA0hQrYB0VpLJoorglMZABFdXlWrHn1NEOzdhQKdks0=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=

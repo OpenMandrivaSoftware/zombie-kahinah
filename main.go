@@ -11,12 +11,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/robxu9/zombie-kahinah/util"
+	"gitea.tsn.sh/robert/zombie-kahinah/util"
 
 	"github.com/astaxie/beego"
-	"github.com/robxu9/zombie-kahinah/controllers"
-	"github.com/robxu9/zombie-kahinah/integration"
-	"github.com/robxu9/zombie-kahinah/models"
+	"gitea.tsn.sh/robert/zombie-kahinah/controllers"
+	"gitea.tsn.sh/robert/zombie-kahinah/integration"
+	"gitea.tsn.sh/robert/zombie-kahinah/models"
 	"github.com/gosexy/to"
 )
 

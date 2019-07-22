@@ -14,8 +14,8 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"github.com/robxu9/zombie-kahinah/models"
-	"github.com/robxu9/zombie-kahinah/util"
+	"gitea.tsn.sh/robert/zombie-kahinah/models"
+	"gitea.tsn.sh/robert/zombie-kahinah/util"
 	"github.com/gosexy/dig"
 	"github.com/gosexy/to"
 )

@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/astaxie/beego/orm"
-	"github.com/robxu9/zombie-kahinah/models"
+	"gitea.tsn.sh/robert/zombie-kahinah/models"
 )
 
 type AuditController struct {

@@ -1,4 +1,4 @@
-module github.com/robxu9/zombie-kahinah
+module gitea.tsn.sh/robert/zombie-kahinah
 
 go 1.12
 
@@ -12,6 +12,7 @@ require (
 	github.com/markbates/goth v0.0.0-20170523145829-c04864b86001
 	github.com/mattn/go-sqlite3 v0.0.0-20170407154627-cf7286f069c3
 	github.com/pmylund/go-cache v0.0.0-20170418232947-7ac151875ffb
+	github.com/robxu9/zombie-kahinah v0.0.0-20170612023957-e9593d08e0cc
 	github.com/satori/go.uuid v0.0.0-20170321230731-5bf94b69c6b6
 	github.com/stretchr/testify v1.3.0 // indirect
 	golang.org/x/net v0.0.0-20170203232347-41bba8d80bbf

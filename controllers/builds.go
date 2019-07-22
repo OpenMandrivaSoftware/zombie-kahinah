@@ -7,12 +7,12 @@ import (
 	"sort"
 	"time"
 
-	"github.com/robxu9/zombie-kahinah/util"
+	"gitea.tsn.sh/robert/zombie-kahinah/util"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"github.com/robxu9/zombie-kahinah/integration"
-	"github.com/robxu9/zombie-kahinah/models"
+	"gitea.tsn.sh/robert/zombie-kahinah/integration"
+	"gitea.tsn.sh/robert/zombie-kahinah/models"
 	"github.com/gosexy/to"
 )
 

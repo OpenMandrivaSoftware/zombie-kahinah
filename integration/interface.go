@@ -1,7 +1,7 @@
 package integration
 
 import (
-	"github.com/robxu9/zombie-kahinah/models"
+	"gitea.tsn.sh/robert/zombie-kahinah/models"
 	"log"
 )
 

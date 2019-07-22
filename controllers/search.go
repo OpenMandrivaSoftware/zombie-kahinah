@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/astaxie/beego/orm"
-	"github.com/robxu9/zombie-kahinah/models"
+	"gitea.tsn.sh/robert/zombie-kahinah/models"
 	"github.com/gosexy/to"
 	"strings"
 )
