@@ -17,7 +17,7 @@ conversion][6] they may be better suited for the task.
 ## Installation
 
 ```sh
-go get -u menteslibres.net/gosexy/to
+go get -u github.com/xiam/to
 ```
 
 ## Usage
@@ -25,7 +25,7 @@ go get -u menteslibres.net/gosexy/to
 Import the package
 
 ```go
-import "menteslibres.net/gosexy/to"
+import "github.com/xiam/to"
 ```
 
 Use the available `to` functions to convert a `float64` into a `string`:
@@ -102,7 +102,7 @@ BenchmarkFloatToBytes             2000000               773 ns/op
 BenchmarkIntToBool                5000000               403 ns/op
 BenchmarkStringToTime             1000000              1063 ns/op
 BenchmarkConvert                 10000000               199 ns/op
-ok      menteslibres.net/gosexy/to      27.670s
+ok      github.com/xiam/to      27.670s
 ```
 
 See the [docs][1] for a full reference of all the available `to` methods.
@@ -132,8 +132,8 @@ This is Open Source released under the terms of the MIT License:
 > OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 > WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-[1]: http://godoc.org/menteslibres.net/gosexy/to
-[2]: https://menteslibres.net/gosexy/to
+[1]: http://godoc.org/github.com/xiam/to
+[2]: https://github.com/xiam/to
 [3]: http://golang.org/ref/spec#The_zero_value
 [4]: http://golang.org/pkg/strconv/
 [5]: http://golang.org/pkg/fmt/

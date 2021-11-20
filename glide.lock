@@ -47,8 +47,8 @@ imports:
   - internal/remote_api
   - internal/urlfetch
   - urlfetch
-- name: menteslibres.net/gosexy/dig
+- name: github.com/xiam/dig
   version: 8c84038322702f6214cc1403a74c33c86ad65f9a
-- name: menteslibres.net/gosexy/to
+- name: github.com/xiam/to
   version: c20e083e31230b84ffa23c5d2fb0bc55f5292681
 testImports: []

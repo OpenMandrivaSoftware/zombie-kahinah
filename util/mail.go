@@ -14,8 +14,8 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"github.com/robxu9/zombie-kahinah/models"
-	"menteslibres.net/gosexy/to"
+	"github.com/OpenMandrivaSoftware/zombie-kahinah/models"
+	"github.com/xiam/to"
 )
 
 var (

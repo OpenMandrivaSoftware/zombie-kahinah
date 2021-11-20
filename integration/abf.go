@@ -14,10 +14,10 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"github.com/robxu9/zombie-kahinah/models"
-	"github.com/robxu9/zombie-kahinah/util"
-	"menteslibres.net/gosexy/dig"
-	"menteslibres.net/gosexy/to"
+	"github.com/OpenMandrivaSoftware/zombie-kahinah/models"
+	"github.com/OpenMandrivaSoftware/zombie-kahinah/util"
+	"github.com/xiam/dig"
+	"github.com/xiam/to"
 )
 
 const (

@@ -21,7 +21,7 @@ by sudden changes on the expected JSON.
 ## Installation
 
 ```
-go get -u menteslibres.net/gosexy/dig
+go get -u github.com/xiam/dig
 ```
 
 ## Usage
@@ -135,5 +135,5 @@ See the [online docs][1] and the [project page][2].
 >  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 >  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-[1]: http://godoc.org/menteslibres.net/gosexy/dig
-[2]: https://menteslibres.net/gosexy/dig
+[1]: http://godoc.org/github.com/xiam/dig
+[2]: https://github.com/xiam/dig
