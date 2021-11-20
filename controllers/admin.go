@@ -6,7 +6,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/robxu9/zombie-kahinah/models"
-	"menteslibres.net/gosexy/to"
+	"gitgub.com/xiam/to"
 )
 
 var (
