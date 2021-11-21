@@ -1,4 +1,4 @@
-package: github.com/robxu9/zombie-kahinah
+package: github.com/OpenMandrivaSoftware/zombie-kahinah
 import:
 - package: github.com/astaxie/beego
   subpackages:
@@ -6,8 +6,8 @@ import:
 - package: github.com/go-sql-driver/mysql
 - package: github.com/mattn/go-sqlite3
 - package: github.com/pmylund/go-cache
-- package: menteslibres.net/gosexy/dig
-- package: menteslibres.net/gosexy/to
+- package: github.com/xiam/dig
+- package: githuc.com/xiam/to
 - package: github.com/markbates/goth
 - package: github.com/satori/go.uuid
 - package: golang.org/x/oauth2

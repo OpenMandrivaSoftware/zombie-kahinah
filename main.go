@@ -11,12 +11,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/robxu9/zombie-kahinah/util"
+	"github.com/OpenMandrivaSoftware/zombie-kahinah/util"
 
 	"github.com/astaxie/beego"
-	"github.com/robxu9/zombie-kahinah/controllers"
-	"github.com/robxu9/zombie-kahinah/integration"
-	"github.com/robxu9/zombie-kahinah/models"
+	"github.com/OpenMandrivaSoftware/zombie-kahinah/controllers"
+	"github.com/OpenMandrivaSoftware/zombie-kahinah/integration"
+	"github.com/OpenMandrivaSoftware/zombie-kahinah/models"
 	"menteslibres.net/gosexy/to"
 )
 

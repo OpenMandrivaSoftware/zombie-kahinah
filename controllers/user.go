@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/robxu9/zombie-kahinah/models"
+	"github.com/OpenMandrivaSoftware/zombie-kahinah/models"
 )
 
 type UserController struct {

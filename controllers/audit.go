@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/astaxie/beego/orm"
-	"github.com/robxu9/zombie-kahinah/models"
+	"github.com/OpenMandrivaSoftware/zombie-kahinah/models"
 )
 
 type AuditController struct {
