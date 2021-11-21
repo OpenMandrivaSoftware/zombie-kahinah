@@ -7,7 +7,11 @@ import:
 - package: github.com/mattn/go-sqlite3
 - package: github.com/pmylund/go-cache
 - package: github.com/xiam/dig
+<<<<<<< HEAD
+- package: githuc.com/xiam/to
+=======
 - package: github.com/xiam/to
+>>>>>>> c7f08dbf320003f27256d4d6413b6fef23ac8c3f
 - package: github.com/markbates/goth
 - package: github.com/satori/go.uuid
 - package: golang.org/x/oauth2
