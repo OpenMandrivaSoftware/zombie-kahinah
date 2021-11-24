@@ -93,11 +93,6 @@ func showErr(err interface{}, ctx *context.Context, stack string) {
 		"BeegoVersion":  VERSION,
 		"GoVersion":     runtime.Version(),
 	}
-	if ctx.Output.Status != 0 {
-		ctx.ResponseWriter.WriteHeader(ctx.Output.Status)
-	} else {
-		ctx.ResponseWriter.WriteHeader(500)
-	}
 	t.Execute(ctx.ResponseWriter, data)
 }
 
@@ -364,9 +359,23 @@ func gatewayTimeout(rw http.ResponseWriter, r *http.Request) {
 	)
 }
 
+// show 413 Payload Too Large
+func payloadTooLarge(rw http.ResponseWriter, r *http.Request) {
+	responseError(rw, r,
+		413,
+		`<br>The page you have requested is unavailable.
+		 <br>Perhaps you are here because:<br><br>
+		 <ul>
+			<br>The request entity is larger than limits defined by server.
+			<br>Please change the request entity and try again.
+		 </ul>
+		`,
+	)
+}
+
 func responseError(rw http.ResponseWriter, r *http.Request, errCode int, errContent string) {
 	t, _ := template.New("beegoerrortemp").Parse(errtpl)
-	data := map[string]interface{}{
+	data := M{
 		"Title":        http.StatusText(errCode),
 		"BeegoVersion": VERSION,
 		"Content":      template.HTML(errContent),
@@ -439,6 +448,9 @@ func exception(errCode string, ctx *context.Context) {
 }
 
 func executeError(err *errorInfo, ctx *context.Context, code int) {
+	//make sure to log the error in the access log
+	LogAccess(ctx, nil, code)
+
 	if err.errorType == errorTypeHandler {
 		ctx.ResponseWriter.WriteHeader(code)
 		err.handler(ctx.ResponseWriter, ctx.Request)

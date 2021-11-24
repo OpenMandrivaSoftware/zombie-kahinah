@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"runtime/debug"
 	"strings"
 )
 
@@ -89,7 +90,7 @@ func registerModel(PrefixOrSuffix string, model interface{}, isPrefix bool) {
 	modelCache.set(table, mi)
 }
 
-// boostrap models
+// bootstrap models
 func bootStrap() {
 	if modelCache.done {
 		return
@@ -298,6 +299,7 @@ func bootStrap() {
 end:
 	if err != nil {
 		fmt.Println(err)
+		debug.PrintStack()
 		os.Exit(2)
 	}
 }
@@ -332,14 +334,14 @@ func RegisterModelWithSuffix(suffix string, models ...interface{}) {
 	}
 }
 
-// BootStrap bootrap models.
+// BootStrap bootstrap models.
 // make all model parsed and can not add more models
 func BootStrap() {
+	modelCache.Lock()
+	defer modelCache.Unlock()
 	if modelCache.done {
 		return
 	}
-	modelCache.Lock()
-	defer modelCache.Unlock()
 	bootStrap()
 	modelCache.done = true
 }

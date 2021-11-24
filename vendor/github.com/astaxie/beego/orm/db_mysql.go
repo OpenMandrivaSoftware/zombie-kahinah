@@ -22,10 +22,11 @@ import (
 
 // mysql operators.
 var mysqlOperators = map[string]string{
-	"exact":     "= ?",
-	"iexact":    "LIKE ?",
-	"contains":  "LIKE BINARY ?",
-	"icontains": "LIKE ?",
+	"exact":       "= ?",
+	"iexact":      "LIKE ?",
+	"strictexact": "= BINARY ?",
+	"contains":    "LIKE BINARY ?",
+	"icontains":   "LIKE ?",
 	// "regex":       "REGEXP BINARY ?",
 	// "iregex":      "REGEXP ?",
 	"gt":          "> ?",
@@ -46,6 +47,7 @@ var mysqlTypes = map[string]string{
 	"pk":              "NOT NULL PRIMARY KEY",
 	"bool":            "bool",
 	"string":          "varchar(%d)",
+	"string-char":     "char(%d)",
 	"string-text":     "longtext",
 	"time.Time-date":  "date",
 	"time.Time":       "datetime",
