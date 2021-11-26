@@ -9,11 +9,11 @@ import (
 
 	"gitea.tsn.sh/robert/zombie-kahinah/util"
 
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 	"gitea.tsn.sh/robert/zombie-kahinah/integration"
 	"gitea.tsn.sh/robert/zombie-kahinah/models"
-	"github.com/gosexy/to"
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
+	"github.com/xiam/to"
 )
 
 const (

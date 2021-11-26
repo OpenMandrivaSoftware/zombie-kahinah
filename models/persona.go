@@ -5,7 +5,7 @@ import (
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/github"
 	uuid "github.com/satori/go.uuid"
-	"github.com/gosexy/to"
+	"github.com/xiam/to"
 )
 
 var (

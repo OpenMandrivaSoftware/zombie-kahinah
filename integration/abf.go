@@ -12,12 +12,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 	"gitea.tsn.sh/robert/zombie-kahinah/models"
 	"gitea.tsn.sh/robert/zombie-kahinah/util"
-	"github.com/gosexy/dig"
-	"github.com/gosexy/to"
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
+	"github.com/xiam/dig"
+	"github.com/xiam/to"
 )
 
 const (
@@ -128,7 +128,7 @@ func (a ABF) handleResponse(resp *http.Response, testing bool) error {
 			// *check for duplicates before continuing
 			// *we only check for duuplicates in the same platform; different platforms have different conditions
 			var possibleDuplicate models.BuildList
-			err = o.QueryTable(new(models.BuildList)).Filter("HandleProject", dig.String(&json, "project", "fullname")).Filter("Platform", dig.String(&json, "save_to_repository", "platform", "name")).Filter("HandleCommitId", dig.String(&json, "last_published_commit_hash") + ":" + dig.String(&json, "commit_hash")).Filter("Status", models.STATUS_TESTING).One(&possibleDuplicate)
+			err = o.QueryTable(new(models.BuildList)).Filter("HandleProject", dig.String(&json, "project", "fullname")).Filter("Platform", dig.String(&json, "save_to_repository", "platform", "name")).Filter("HandleCommitId", dig.String(&json, "last_published_commit_hash")+":"+dig.String(&json, "commit_hash")).Filter("Status", models.STATUS_TESTING).One(&possibleDuplicate)
 			if err == nil { // we found a duplicate... handle and continue
 				possibleDuplicate.HandleId = possibleDuplicate.HandleId + ";" + to.String(id)
 				possibleDuplicate.Architecture += ";" + dig.String(&json, "arch", "name")

@@ -1,10 +1,11 @@
 package controllers
 
 import (
-	"github.com/astaxie/beego/orm"
-	"gitea.tsn.sh/robert/zombie-kahinah/models"
-	"github.com/gosexy/to"
 	"strings"
+
+	"gitea.tsn.sh/robert/zombie-kahinah/models"
+	"github.com/astaxie/beego/orm"
+	"github.com/xiam/to"
 )
 
 type SearchController struct {

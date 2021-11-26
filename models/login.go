@@ -2,7 +2,7 @@ package models
 
 import (
 	"github.com/astaxie/beego"
-	"github.com/gosexy/to"
+	"github.com/xiam/to"
 )
 
 const (

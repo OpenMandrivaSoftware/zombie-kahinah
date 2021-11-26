@@ -3,10 +3,10 @@ package controllers
 import (
 	"strings"
 
+	"gitea.tsn.sh/robert/zombie-kahinah/models"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"gitea.tsn.sh/robert/zombie-kahinah/models"
-	"github.com/gosexy/to"
+	"github.com/xiam/to"
 )
 
 var (

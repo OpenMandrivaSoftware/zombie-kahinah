@@ -13,11 +13,11 @@ import (
 
 	"gitea.tsn.sh/robert/zombie-kahinah/util"
 
-	"github.com/astaxie/beego"
 	"gitea.tsn.sh/robert/zombie-kahinah/controllers"
 	"gitea.tsn.sh/robert/zombie-kahinah/integration"
 	"gitea.tsn.sh/robert/zombie-kahinah/models"
-	"github.com/gosexy/to"
+	"github.com/astaxie/beego"
+	"github.com/xiam/to"
 )
 
 func main() {
