@@ -36,15 +36,9 @@ func GetPrefixString(dest string) string {
 }
 
 func GetFullUrlStringWithData(dest string, data interface{}) string {
-	if strings.HasSuffix(outwardloc, "/") {
-		return outwardloc + GetPrefixStringWithData(dest, data)
-	}
-	return outwardloc + "/" + GetPrefixStringWithData(dest, data)
+	return strings.TrimSuffix(outwardloc, "/") + "/" + strings.TrimPrefix(GetPrefixStringWithData(dest, data), "/")
 }
 
 func GetFullUrlString(dest string) string {
-	if strings.HasSuffix(outwardloc, "/") {
-		return outwardloc + GetPrefixString(dest)
-	}
-	return outwardloc + "/" + GetPrefixString(dest)
+	return strings.TrimSuffix(outwardloc, "/") + "/" + strings.TrimPrefix(GetPrefixString(dest), "/")
 }
