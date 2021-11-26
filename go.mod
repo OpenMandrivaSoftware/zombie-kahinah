@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/beego/beego/v2 v2.0.2-0.20211122153232-1fe29f378773
 	github.com/go-sql-driver/mysql v1.6.0
+	github.com/lib/pq v1.10.4
 	github.com/markbates/goth v1.68.0
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/pmylund/go-cache v2.1.0+incompatible
@@ -19,7 +20,6 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
-	github.com/lib/pq v1.10.4 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.4.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
