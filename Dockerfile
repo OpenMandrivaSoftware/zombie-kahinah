@@ -29,5 +29,5 @@ COPY --from=builder /go/src/app/views /views
 
 ENV HOME=/
 
-VOLUME ["/conf", "/data", "/.ssh.identity", "/news.txt"]
+VOLUME ["/conf", "/data", "/.ssh.identity"]
 CMD ["/zombie-kahinah"]
