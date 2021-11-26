@@ -11,8 +11,8 @@ import (
 
 	"gitea.tsn.sh/robert/zombie-kahinah/integration"
 	"gitea.tsn.sh/robert/zombie-kahinah/models"
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
+	beego "github.com/beego/beego/v2/adapter"
+	"github.com/beego/beego/v2/adapter/orm"
 	"github.com/xiam/to"
 )
 

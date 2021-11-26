@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/astaxie/beego"
+	beego "github.com/beego/beego/v2/adapter"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/github"
 	uuid "github.com/satori/go.uuid"

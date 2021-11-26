@@ -4,7 +4,7 @@ import (
 	"html/template"
 	"time"
 
-	"github.com/astaxie/beego"
+	beego "github.com/beego/beego/v2/adapter"
 	"gitea.tsn.sh/robert/zombie-kahinah/models"
 )
 

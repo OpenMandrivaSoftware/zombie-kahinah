@@ -3,7 +3,7 @@ package controllers
 import (
 	"log"
 
-	"github.com/astaxie/beego/orm"
+	"github.com/beego/beego/v2/adapter/orm"
 	"gitea.tsn.sh/robert/zombie-kahinah/models"
 )
 

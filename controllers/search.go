@@ -4,7 +4,8 @@ import (
 	"strings"
 
 	"gitea.tsn.sh/robert/zombie-kahinah/models"
-	"github.com/astaxie/beego/orm"
+	"github.com/beego/beego/v2/adapter/orm"
+	newOrm "github.com/beego/beego/v2/client/orm"
 	"github.com/xiam/to"
 )
 
@@ -57,7 +58,7 @@ func (this *SearchController) JsonGet() {
 				qt = qt.Filter("Name__icontains", strs[0])
 				qt = qt.Filter("Architecture__icontains", strs[1])
 			} else { // could be either one, check both
-				cond := orm.NewCondition()
+				cond := newOrm.NewCondition()
 				qt = qt.SetCond(cond.AndCond(cond.Or("Name__icontains", filter).Or("Architecture__icontains", filter)))
 			}
 		}
@@ -70,7 +71,7 @@ func (this *SearchController) JsonGet() {
 				qt = qt.Filter("Platform__icontains", strs[0])
 				qt = qt.Filter("Repo__icontains", strs[1])
 			} else { // could be either one, check both
-				cond := orm.NewCondition()
+				cond := newOrm.NewCondition()
 				qt = qt.SetCond(cond.AndCond(cond.Or("Platform__icontains", filter).Or("Repo__icontains", filter)))
 			}
 		}
@@ -109,7 +110,7 @@ func (this *SearchController) JsonGet() {
 				qt = qt.Filter("Name__icontains", strs[0])
 				qt = qt.Filter("Architecture__icontains", strs[1])
 			} else { // could be either one, check both
-				cond := orm.NewCondition()
+				cond := newOrm.NewCondition()
 				qt = qt.SetCond(cond.AndCond(cond.Or("Name__icontains", filter).Or("Architecture__icontains", filter)))
 			}
 		}
@@ -122,7 +123,7 @@ func (this *SearchController) JsonGet() {
 				qt = qt.Filter("Platform__icontains", strs[0])
 				qt = qt.Filter("Repo__icontains", strs[1])
 			} else { // could be either one, check both
-				cond := orm.NewCondition()
+				cond := newOrm.NewCondition()
 				qt = qt.SetCond(cond.AndCond(cond.Or("Platform__icontains", filter).Or("Repo__icontains", filter)))
 			}
 		}

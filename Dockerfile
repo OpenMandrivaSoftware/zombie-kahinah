@@ -11,7 +11,8 @@ RUN go install -v ./...
 FROM alpine:latest  
 RUN apk --no-cache add ca-certificates git
 
-WORKDIR /root/
+WORKDIR /
 
-COPY --from=builder /go/bin/zombie-kahinah ./
-CMD ["./zombie-kahinah"]
+COPY --from=builder /go/bin/zombie-kahinah /
+VOLUME ["/conf", "/data"]
+CMD ["/zombie-kahinah"]
