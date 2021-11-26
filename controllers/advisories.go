@@ -5,9 +5,9 @@ import (
 	"log"
 	"strings"
 
+	"gitea.tsn.sh/robert/zombie-kahinah/models"
 	beego "github.com/beego/beego/v2/adapter"
 	"github.com/beego/beego/v2/adapter/orm"
-	"gitea.tsn.sh/robert/zombie-kahinah/models"
 )
 
 var (
@@ -61,7 +61,7 @@ func (this *AdvisoryMainController) Get() {
 		var advisories []*models.Advisory
 
 		_, err := qt.All(&advisories)
-		if err != nil && err != orm.ErrNoRows {
+		if err != nil && err.Error() != orm.ErrNoRows.Error() {
 			log.Printf("error occured trying to get advisories: %s", err)
 			this.Abort("500")
 		}

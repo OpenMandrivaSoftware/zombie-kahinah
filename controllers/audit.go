@@ -3,8 +3,8 @@ package controllers
 import (
 	"log"
 
-	"github.com/beego/beego/v2/adapter/orm"
 	"gitea.tsn.sh/robert/zombie-kahinah/models"
+	"github.com/beego/beego/v2/adapter/orm"
 )
 
 type AuditController struct {
@@ -43,7 +43,7 @@ func (this *AuditController) Get() {
 	}
 
 	_, err = qt.Limit(50, (page-1)*50).OrderBy("-Time").All(&karma)
-	if err != nil && err != orm.ErrNoRows {
+	if err != nil && err.Error() != orm.ErrNoRows.Error() {
 		log.Println(err)
 		this.Abort("500")
 	}

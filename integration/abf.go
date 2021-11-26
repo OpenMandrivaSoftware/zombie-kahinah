@@ -469,7 +469,7 @@ func (a ABF) getUser(id uint64) *models.User {
 
 	var userIntegration models.User
 	err := o.QueryTable(new(models.User)).Filter("Integration", id).One(&userIntegration)
-	if err == orm.ErrNoRows {
+	if err != nil && err.Error() == orm.ErrNoRows.Error() {
 
 		req, err := http.NewRequest("GET", ABF_URL+"/users/"+to.String(id)+".json", nil)
 		if err != nil {

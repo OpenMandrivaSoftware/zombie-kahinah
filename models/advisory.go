@@ -55,7 +55,7 @@ func NextAdvisoryId(prefix string) uint64 {
 
 	var adv Advisory
 	err := o.QueryTable(new(Advisory)).Filter("Prefix", prefix).OrderBy("-AdvisoryId").Limit(1).One(&adv)
-	if err == orm.ErrNoRows {
+	if err != nil && err.Error() == orm.ErrNoRows.Error() {
 		return 1
 	} else if err != nil {
 		panic(err)

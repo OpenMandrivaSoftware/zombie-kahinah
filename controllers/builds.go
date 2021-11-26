@@ -81,7 +81,7 @@ func (this *BuildsController) Get() {
 	}
 
 	_, err = qt.Limit(50, (page-1)*50).OrderBy("-Updated").All(&packages)
-	if err != nil && err != orm.ErrNoRows {
+	if err != nil && err.Error() != orm.ErrNoRows.Error() {
 		log.Println(err)
 		this.Abort("500")
 	}
@@ -140,7 +140,7 @@ func (this *RejectedController) Get() {
 	}
 
 	_, err = qt.Limit(50, (page-1)*50).OrderBy("-Updated").Filter("status", models.STATUS_REJECTED).All(&packages)
-	if err != nil && err != orm.ErrNoRows {
+	if err != nil && err.Error() != orm.ErrNoRows.Error() {
 		log.Println(err)
 		this.Abort("500")
 	}
@@ -205,7 +205,7 @@ func (this *PublishedController) Get() {
 	}
 
 	_, err = qt.Limit(50, (page-1)*50).OrderBy("-Updated").Filter("status", models.STATUS_PUBLISHED).All(&packages)
-	if err != nil && err != orm.ErrNoRows {
+	if err != nil && err.Error() != orm.ErrNoRows.Error() {
 		log.Println(err)
 		this.Abort("500")
 	}
@@ -252,7 +252,7 @@ func (this *TestingController) Get() {
 	qt := o.QueryTable(new(models.BuildList))
 
 	num, err := qt.Filter("status", models.STATUS_TESTING).All(&packages)
-	if err != nil && err != orm.ErrNoRows {
+	if err != nil && err.Error() != orm.ErrNoRows.Error() {
 		log.Println(err)
 		this.Abort("500")
 	}
@@ -306,7 +306,7 @@ func (this *BuildController) Get() {
 	qt := o.QueryTable(new(models.BuildList))
 
 	err := qt.Filter("Id", id).One(&pkg)
-	if err == orm.ErrNoRows {
+	if err != nil && err.Error() == orm.ErrNoRows.Error() {
 		this.Abort("404")
 	} else if err != nil {
 		log.Println(err)
@@ -383,14 +383,15 @@ func (this *BuildController) Get() {
 		kt := o.QueryTable(new(models.Karma))
 		var userkarma models.Karma
 		err = kt.Filter("User__Email", user).Filter("List__Id", id).OrderBy("-Time").Limit(1).One(&userkarma)
-		if err != orm.ErrNoRows && err != nil {
+		if err != nil && err.Error() != orm.ErrNoRows.Error() {
 			log.Println(err)
 		} else if err == nil {
-			if userkarma.Vote == models.KARMA_UP {
+			switch userkarma.Vote {
+			case models.KARMA_UP:
 				this.Data["UserVote"] = 1
-			} else if userkarma.Vote == models.KARMA_MAINTAINER {
+			case models.KARMA_MAINTAINER:
 				this.Data["UserVote"] = 2
-			} else if userkarma.Vote == models.KARMA_DOWN {
+			case models.KARMA_DOWN:
 				this.Data["UserVote"] = -1
 			}
 
@@ -467,7 +468,7 @@ func (this *BuildController) Post() {
 	qt := o.QueryTable(new(models.BuildList))
 
 	err := qt.Filter("Id", id).One(&pkg)
-	if err == orm.ErrNoRows {
+	if err != nil && err.Error() == orm.ErrNoRows.Error() {
 		this.Abort("404")
 	} else if err != nil {
 		log.Println(err)

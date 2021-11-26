@@ -52,7 +52,7 @@ func FindUser(email string) *User {
 
 	var user User
 	err := qt.Filter("Email", email).One(&user)
-	if err != nil && err != orm.ErrNoRows {
+	if err != nil && err.Error() != orm.ErrNoRows.Error() {
 		panic(err)
 	} else if err != nil {
 		user = User{
@@ -74,7 +74,7 @@ func FindUserApi(apikey string) *User {
 
 	var user User
 	err := qt.Filter("ApiKey", apikey).One(&user)
-	if err != nil && err != orm.ErrNoRows {
+	if err != nil && err.Error() != orm.ErrNoRows.Error() {
 		panic(err)
 	} else if err != nil {
 		// No such User
@@ -94,7 +94,7 @@ func FindUserNoCreate(email string) *User {
 
 	var user User
 	err := qt.Filter("Email", email).One(&user)
-	if err != nil && err != orm.ErrNoRows {
+	if err != nil && err.Error() != orm.ErrNoRows.Error() {
 		panic(err)
 	} else if err != nil {
 		return nil
@@ -146,7 +146,7 @@ func PermRegister(perm string) {
 	qt := o.QueryTable(new(UserPermission))
 
 	num, err := qt.Filter("Permission", perm).Count()
-	if err != nil && err != orm.ErrNoRows {
+	if err != nil && err.Error() != orm.ErrNoRows.Error() {
 		panic(err)
 	}
 
@@ -167,7 +167,7 @@ func PermGet(perm string) *UserPermission {
 
 	var p UserPermission
 	err := qt.Filter("Permission", perm).One(&p)
-	if err != nil && err != orm.ErrNoRows {
+	if err != nil && err.Error() != orm.ErrNoRows.Error() {
 		panic(err)
 	} else if err != nil {
 		return nil
@@ -183,7 +183,7 @@ func PermGetAll() []*UserPermission {
 	var perms []*UserPermission
 	_, err := qt.All(&perms)
 
-	if err != nil && err != orm.ErrNoRows {
+	if err != nil && err.Error() != orm.ErrNoRows.Error() {
 		panic(err)
 	}
 
