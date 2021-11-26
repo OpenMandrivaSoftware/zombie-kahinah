@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	PREFIX = beego.AppConfig.String("urlprefix")
+	outwardloc = beego.AppConfig.String("outwardloc")
+	PREFIX     = beego.AppConfig.String("urlprefix")
 )
 
 func GetPrefixStringWithData(dest string, data interface{}) string {
@@ -31,4 +32,12 @@ func GetPrefixString(dest string) string {
 	}
 
 	return "/" + PREFIX + dest
+}
+
+func GetFullUrlStringWithData(dest string, data interface{}) string {
+	return outwardloc + "/" + GetPrefixStringWithData(dest, data)
+}
+
+func GetFullUrlString(dest string) string {
+	return outwardloc + "/" + GetPrefixString(dest)
 }

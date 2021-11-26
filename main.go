@@ -131,8 +131,8 @@ func main() {
 		return "Unknown: " + s
 	})
 
-	beego.AddFuncMap("url", util.GetPrefixString)
-	beego.AddFuncMap("urldata", util.GetPrefixStringWithData)
+	beego.AddFuncMap("url", util.GetFullUrlString)
+	beego.AddFuncMap("urldata", util.GetFullUrlStringWithData)
 
 	//
 	// --------------------------------------------------------------------
