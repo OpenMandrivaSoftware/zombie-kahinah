@@ -1,17 +1,21 @@
 {{template "header.tpl" .}}
 
       <div class="row">
-        <div class="col-md-10 col-md-offset-1">
           <br/>
-          {{if eq .Package.Status "testing"}}<div class="panel panel-warning">{{else}}
-          {{if eq .Package.Status "rejected"}}<div class="panel panel-danger">{{else}}
-          {{if eq .Package.Status "published"}}<div class="panel panel-success">{{else}}
-          <div class="panel panel-primary">{{end}}{{end}}{{end}}
-            <div class="panel-heading">
-              <h1>{{.Package.Name}} <small>{{.SourceEVR}} ({{.Package.Architecture}}) {{.Package.BuildDate.Year}}-{{.Package.Id}}</small><div class="pull-right">{{.Karma}} {{if .KarmaControls}}<a href="#" class="btn" data-toggle="modal" data-target="#voteModal"><i class="fa fa-3x {{if .UserVote}}fa-check-square-o{{else}}fa-pencil-square-o{{end}}"></i></a>{{end}}</div></h1>
-            </div>
+          {{if eq .Package.Status "testing"}}<div class="card bg-light border-warning">{{else}}
+          {{if eq .Package.Status "rejected"}}<div class="card bg-light border-danger">{{else}}
+          {{if eq .Package.Status "published"}}<div class="card bg-light border-success">{{else}}
+          <div class="card bg-light border-primary">{{end}}{{end}}{{end}}
+            <h2 class="card-header d-flex justify-content-between">
+              {{.Package.Name}} <small>{{.SourceEVR}} ({{.Package.Architecture}}) {{.Package.BuildDate.Year}}-{{.Package.Id}}</small>
+              <div class="text-end">{{.Karma}} {{if .KarmaControls}}<a href="#" class="btn" data-bs-toggle="modal" data-bs-target="#voteModal"><i class="fa fa-2x {{if .UserVote}}fa-check-square-o{{else}}fa-pencil-square-o{{end}}"></i></a>{{end}}</div>
+            </h2>
             <table class="table table-condensed">
               <tbody>
+                <tr>
+                  <td><b>Status</b></td>
+                  <td>{{.Package.Status}}</td>
+                </tr>
                 <tr>
                   <td><b>Submitter</b></td>
                   <td>{{.Package.Submitter.Email | emailat}}</td>
@@ -54,103 +58,85 @@
                 </tr>
             </table>
           </div>
-        </div>
       </div>
 
       <!-- diff & changelog -->
       <div class="row">
-        <div class="col-md-10 col-md-offset-1">
 
-          <div class="panel panel-info">
-            <div class="panel-heading"><button class="btn btn-info" data-toggle="collapse" href="#diff">Git Diff</button><div class="pull-right"><a href="{{.Commits}}" class="btn btn-default">Commits</a></div></div>
-            <div id="diff" class="panel-collapse collapse">
+          <div class="card border-success">
+            <h5 class="card-header"><button class="btn btn-outline-success" data-bs-toggle="collapse" href="#diff">Git Diff</button></h5>
+            <div id="diff" class="card-collapse collapse">
               <pre class="brush: diff">{{.Package.Diff}}</pre>
             </div>
           </div>
 
-          <div class="panel panel-primary">
-            <div class="panel-heading"><button class="btn btn-primary" data-toggle="collapse" href="#cnlog">Changelog</button></div>
-            <div id="cnlog" class="panel-collapse collapse">
+          <div class="card border-info">
+            <h5 class="card-header"><button class="btn btn-outline-info" data-bs-toggle="collapse" href="#cnlog">Changelog</button></h5>
+            <div id="cnlog" class="card-collapse collapse">
               <pre class="pre-scrollable">{{if .Changelog}}{{.Changelog}}{{else}}Not Available{{end}}</pre>
             </div>
           </div>
 
-          <!-- want to test? -->
-          {{if eq .Package.Status "testing"}}
-          <div class="panel panel-warning">
-            <div class="panel-heading"><button class="btn btn-warning" data-toggle="collapse" href="#testinfo">Want to test?</button></div>
-            <div id="testinfo" class="panel-collapse collapse">
-              <div class="panel-body">
-                On your <code>{{.Package.Platform}}/{{.Package.Architecture}}</code> machine, enable the updates-testing repository for {{.Package.Repo}}. Then <code>urpmi.update -a</code> and <code>urpmi</code> the affected packages.<br/>
-                When you're done, you can use <code>urpmi --downgrade</code> to revert back to previous versions.
-              </div>
-            </div>
-          </div>
-          {{end}}
-
-          <div class="panel panel-default">
-            <div class="panel-heading"><button class="btn btn-default">Karma</button></div>
-            <div class="panel-body">
+          <div class="card card-default">
+            <h4 class="card-header"><button class="btn btn-default">Votes</button></h4>
+            <div class="card-body">
               {{if .Votes}}
               <table class="table table-condensed table-responsive table-bordered">
                 {{with .Votes}}
                   {{range .}}
-                <tr class="{{if eq .Value 1}}success{{end}}{{if eq .Value 2}}danger{{end}}{{if eq .Value 3}}info{{end}}{{if eq .Value 4}}warning{{end}}"><td>{{.Key.User.Email | emailat}}</td><td>{{if .Key.Comment}}{{.Key.Comment}}{{else}}<em>No Comment.</em>{{end}}</td><td>{{if .Key.Time}}{{.Key.Time | since}}{{else}}[voted before timekeeping began]{{end}}</td></tr>
+                <tr class="{{if eq .Value 1}}bg-success text-white{{end}}{{if eq .Value 2}}bg-danger text-white{{end}}{{if eq .Value 3}}bg-info{{end}}{{if eq .Value 4}}bg-warning{{end}}"><td>{{.Key.User.Email | emailat}}</td><td>{{if .Key.Comment}}{{.Key.Comment}}{{else}}<em>No Comment.</em>{{end}}</td><td>{{if .Key.Time}}{{.Key.Time | since}}{{else}}[voted before timekeeping began]{{end}}</td></tr>
                   {{end}}
                 {{end}}
               </table>
               {{else}}
-              No opinions... yet.
+              Nobody has submitted a vote for this package yet. Go test it, and vote!
               {{end}}
             </div>
           </div>
 
-        </div>
       </div>
 
       <!-- Vote Modal -->
 
       <div class="modal fade" id="voteModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
           <center>
             <div class="modal-content">
               <form class="form-inline" role="form" method="post" id="voteForm">
                 {{ .xsrf_data }}
-                <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                  <h4 class="modal-title" id="Vote Modal">Cast Opinion</h4>
+                <div class="modal-header d-flex justify-content-between">
+                  <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <h4 class="modal-title" id="Vote Modal">Submit Vote</h4>
                 </div>
                 <div class="modal-body">
-                  <div class="btn-group" data-toggle="buttons">
-                    <label class="btn btn-default {{if eq .UserVote 0}}active{{end}}">
-                      <input type="radio" name="type" value="Neutral" {{if eq .UserVote 0}}checked{{end}}><i class="fa fa-lg fa-meh-o"></i> No Vote
-                    </label>
-                    <label class="btn btn-danger {{if eq .UserVote -1}}active{{end}}">
-                      <input type="radio" name="type" value="Down" {{if eq .UserVote -1}}checked{{end}}><i class="fa fa-lg fa-frown-o"></i> Reject
-                    </label>
-                    <label class="btn btn-success {{if eq .UserVote 1}}active{{end}}">
-                      <input type="radio" name="type" value="Up" {{if eq .UserVote 1}}checked{{end}}><i class="fa fa-lg fa-smile-o"></i> Accept
-                    </label>
+                  <div class="btn-group" data-toggle="buttons">                  
+                    <input type="radio" class="btn-check" name="type" value="Neutral" id="opNeutral" {{if eq .UserVote 0}}checked{{end}}>
+                    <label class="btn-outline-primary" for="opNeutral"><i class="fa fa-lg fa-meh-o"></i><br>No Vote</label>
+
+                    <input type="radio" class="btn-check" name="type" value="Down" id="opDown" {{if eq .UserVote -1}}checked{{end}}>
+                    <label class="btn btn-outline-danger" for="opDown"><i class="fa fa-lg fa-frown-o"></i> Reject</label>
+
+                    <input type="radio" class="btn-check" name="type" value="Up" id="opUp" {{if eq .UserVote 1}}checked{{end}}>
+                    <label class="btn btn-outline-success" for="opUp"><i class="fa fa-lg fa-smile-o"></i> Accept</label>
+
                     {{if .MaintainerControls}}
-                    <label class="btn btn-primary {{if eq .UserVote 2}}active{{end}}" {{if not .MaintainerTime}}disabled="disabled"{{end}}>
-                      {{if .MaintainerTime}}<input type="radio" name="type" value="Maintainer" {{if eq .UserVote 2}}checked{{end}}>{{end}}<i class="fa fa-lg fa-thumbs-o-up"></i> Maintainer Push
-                    </label>
+                    {{if .MaintainerTime}}<input type="radio" class="btn-check" name="type" value="Maintainer" id="opMaintainer" {{if eq .UserVote 2}}checked{{end}}>{{end}}
+                    <label class="btn btn-outline-primary" for="opMaintainer" {{if not .MaintainerTime}}disabled="disabled"{{end}}><i class="fa fa-lg fa-thumbs-o-up"></i> Maintainer Push</label>
                     {{end}}
+
                     {{if .QAControls}}
-                    <label class="btn btn-warning">
-                      <input type="radio" name="type" id="voteQADown" value="QABlock"><i class="fa fa-lg fa-thumbs-o-down"></i> QA Block
-                    </label>
-                    <label class="btn btn-warning">
-                      <input type="radio" name="type" id="voteQAUp" value="QAPush"><i class="fa fa-lg fa-thumbs-o-up"></i> QA Push
-                    </label>
-                    <label class="btn btn-warning">
-                      <input type="radio" name="type" id="voteQAClear" value="QAClear"><i class="fa fa-lg fa-scissors"></i> QA Clear
-                    </label>
+                    <input type="radio" class="btn-check" name="type" id="voteQADown" value="QABlock">
+                    <label class="btn btn-outline-warning" for="voteQADown"><i class="fa fa-lg fa-thumbs-o-down"></i> QA Block</label>
+
+                    <input type="radio" class="btn-check" name="type" id="voteQAUp" value="QAPush">
+                    <label class="btn btn-outline-warning" for="voteQAUp"><i class="fa fa-lg fa-thumbs-o-up"></i> QA Push</label>
+
+                    <input type="radio" class="btn-check" name="type" id="voteQAClear" value="QAClear">
+                    <label class="btn btn-outline-warning" for="voteQAClear"><i class="fa fa-lg fa-scissors"></i> QA Clear</label>
                     {{end}}
                     {{if .FinalizeControls}}
-                    <label class="btn btn-info">
-                        <input type="radio" name="type" id="voteFinalize" value="Finalize"><i class="fa fa-lg fa-flag-o"></i> Finalize
-                    </label>
+                    <input type="radio" class="btn-check" name="type" id="voteFinalize" value="Finalize">
+                    <label class="btn btn-outline-info" for="voteFinalize" ><i class="fa fa-lg fa-flag-o"></i> Finalize</label>
                     {{end}}
                   </div>
                 </div>
@@ -165,7 +151,7 @@
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
                   <button type="submit" type="button" class="btn btn-primary">Submit</button>
                 </div>
               </form>

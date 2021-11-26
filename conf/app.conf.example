@@ -16,11 +16,13 @@ usefcgi = false
 
 [database]
 db_prefix = kh_
+; types are: sqlite3, mysql, postgres
 db_type = sqlite3
-db_name = data.sqlite
-db_host = localhost:3306
-db_user = root
-db_pass = toor
+; db_url is defined by the connection driver
+; for sqlite: file:data.sqlite
+; for mysql: user:pass@tcp(hostname)/dbname
+; for postgres: postgres://user:pass@hostname/dbname?sslmode=require
+db_url = file:data.sqlite
 
 [abf]
 abf_user = <USERNAME>

@@ -52,36 +52,40 @@
       </div>
 
       {{if .LoggedIn}}
-      <div class="row">
-          <form id="bulkForm" class="form-inline">
-              <div class="form-group">
-                  <p class="form-control-static"><strong>Bulk Actions: </strong></p>
+      <div class="container">
+        <div class="row justify-content-end">
+          <div class="col-sm-6">
+            <h3>Bulk Actions</h3>
+            <form id="bulkForm" class="row g-3">
+              <div class="input-group">
+                <select id="bulkAction" class="form-select" name="action">
+                    <option value="Neutral">Clear/Neutral</option>
+                    <option value="Down">Reject</option>
+                    <option value="Up">Accept</option>
+                    <option value="Maintainer">Maintainer Accept (if possible)</option>
+                    {{if .QAControls}}
+                    <option value=""> --- </option>
+                    <option value="QABlock">QA Block</option>
+                    <option value="QAPush">QA Push</option>
+                    <option value="QAClear">QA Clear</option>
+                    {{end}}
+                    <option value=""> --- </option>
+                    <option value="Finalize">Finalize (if possible)</option>
+                </select>
               </div>
-              <div class="form-group">
-                  <select id="bulkAction" class="form-control" name="action">
-                      <option value="Neutral">Clear/Neutral</option>
-                      <option value="Down">Reject</option>
-                      <option value="Up">Accept</option>
-                      <option value="Maintainer">Maintainer Accept (if possible)</option>
-                      {{if .QAControls}}
-                      <option value=""> --- </option>
-                      <option value="QABlock">QA Block</option>
-                      <option value="QAPush">QA Push</option>
-                      <option value="QAClear">QA Clear</option>
-                      {{end}}
-                      <option value=""> --- </option>
-                      <option value="Finalize">Finalize (if possible)</option>
-                  </select>
-              </div>
-              <div class="form-group">
+              <div class="input-group">
                   <input type="text" id="bulkComments" class="form-control" placeholder="Comments (Optional)">
               </div>
-              <button type="submit" id="bulkApply" class="form-control btn btn-default">Apply</button>
-              <div class="form-group pull-right">
-                  <a id="bulkSelectAll">Select All</a>
-                  <a id="bulkDeselectAll">Deselect All</a>
+              <button type="submit" id="bulkApply" class="form-control btn btn-primary">Apply</button>
+              <div class="input-group justify-content-end">
+                <div class="btn-group" role="group" aria-label="Basic outlined example">
+                  <a id="bulkSelectAll"><button type="button" class="btn btn-outline-primary">Select All</button></a>
+                  <a id="bulkDeselectAll"><button type="button" class="btn btn-outline-primary">Deselect All</button></a>
+                </div>
               </div>
-          </form>
+            </form>
+          </div>
+        </div>
       </div>
       {{end}}
 
