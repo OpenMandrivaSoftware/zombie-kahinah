@@ -3,6 +3,7 @@ package util
 import (
 	"bytes"
 	"html/template"
+	"strings"
 
 	beego "github.com/beego/beego/v2/adapter"
 )
@@ -35,9 +36,15 @@ func GetPrefixString(dest string) string {
 }
 
 func GetFullUrlStringWithData(dest string, data interface{}) string {
+	if strings.HasSuffix(outwardloc, "/") {
+		return outwardloc + GetPrefixStringWithData(dest, data)
+	}
 	return outwardloc + "/" + GetPrefixStringWithData(dest, data)
 }
 
 func GetFullUrlString(dest string) string {
+	if strings.HasSuffix(outwardloc, "/") {
+		return outwardloc + GetPrefixString(dest)
+	}
 	return outwardloc + "/" + GetPrefixString(dest)
 }
