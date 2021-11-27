@@ -11,7 +11,7 @@
 
     <link rel="shortcut icon" href="{{url "/static/img/favicon.png"}}">
 
-    <title>{{.Title}} | Kahinah v3 on Jasper</title>
+    <title>{{.Title}} | Kahinah</title>
 
     <!-- Bootstrap core CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
@@ -28,7 +28,6 @@
     <script>window.urlPrefix = "{{url ""}}";</script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="{{url "/static/js/xsrf.js"}}"></script>
-    <script src="{{url "/static/js/persona.js"}}"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment-with-locales.min.js" integrity="sha256-E3Snwx6F4t7DiA/L3DgPk6In2M1747JSau+3PWjtS5I=" crossorigin="anonymous"></script>
   </head>
 
@@ -66,7 +65,11 @@
           </div>
           <div class="d-flex">
             {{if .xsrf_token}}
-            <button class="btn btn-sm btn-outline" style="display: none" id="login">Github Login</button><button class="btn btn-sm btn-outline-secondary" style="display: none" id="logout">Logout</button>
+              {{if .LoggedIn}}
+                <a class="btn btn-sm btn-outline-secondary" href="{{url "/auth/login"}}" id="logout">Logout</a>
+              {{else}}
+                <a class="btn btn-sm btn-outline-primary" href="{{url "/auth/logout"}}" id="login">Login with Github</a>
+              {{end}}
             {{end}}
           </div>
         </div>

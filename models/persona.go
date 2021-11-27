@@ -38,7 +38,12 @@ type GithubLogoutController struct {
 
 func (this *GithubLogoutController) Get() {
 	this.DestroySession()
-	this.Ctx.WriteString("OK")
+	referrer := this.Ctx.Request.Referer()
+	if referrer == "" {
+		this.Redirect(outwardUrl, 307)
+	} else {
+		this.Redirect(referrer, 307)
+	}
 }
 
 type GithubLoginController struct {
