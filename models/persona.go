@@ -1,6 +1,8 @@
 package models
 
 import (
+	"net/url"
+
 	beego "github.com/beego/beego/v2/adapter"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/github"
@@ -9,27 +11,14 @@ import (
 )
 
 var (
-	outwardUrl   = beego.AppConfig.String("outwardloc")
-	githubKey    = beego.AppConfig.String("auth::githubKey")
-	githubSecret = beego.AppConfig.String("auth::githubSecret")
+	outwardUrl       = beego.AppConfig.String("outwardloc")
+	parsedOutwardUrl = mustParseUrl(outwardUrl)
+	githubKey        = beego.AppConfig.String("auth::githubKey")
+	githubSecret     = beego.AppConfig.String("auth::githubSecret")
 )
 
 func init() {
 	goth.UseProviders(github.New(githubKey, githubSecret, outwardUrl+"/auth/login/callback", "user"))
-}
-
-type GithubCheckController struct {
-	beego.Controller
-}
-
-func (this *GithubCheckController) Get() {
-	session := this.GetSession("github")
-	if session != nil {
-		emailLogin := to.String(session)
-		this.Ctx.WriteString(emailLogin)
-	} else {
-		this.Ctx.WriteString("")
-	}
 }
 
 type GithubLogoutController struct {
@@ -75,7 +64,18 @@ func (this *GithubLoginController) Get() {
 	if referrer == "" {
 		this.SetSession("login-referrer", outwardUrl)
 	} else {
-		this.SetSession("login-referrer", referrer)
+		urlParsed, err := url.Parse(referrer)
+		if err != nil {
+			this.SetSession("login-referrer", referrer)
+		} else {
+			if urlParsed.Host != parsedOutwardUrl.Host {
+				// Maybe a hostname that's wrong? Use our own.
+				urlParsed.Host = parsedOutwardUrl.Host
+				this.SetSession("login-referrer", urlParsed.String())
+			} else {
+				this.SetSession("login-referrer", referrer)
+			}
+		}
 	}
 
 	this.Redirect(oauth2URL, 307)
@@ -113,4 +113,12 @@ func (this *GithubLoginCallbackController) Get() {
 
 	referrer := to.String(this.GetSession("login-referrer"))
 	this.Redirect(referrer, 307)
+}
+
+func mustParseUrl(urlStr string) *url.URL {
+	parsed, err := url.Parse(urlStr)
+	if err != nil {
+		panic(err)
+	}
+	return parsed
 }

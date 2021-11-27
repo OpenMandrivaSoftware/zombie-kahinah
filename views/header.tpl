@@ -65,7 +65,7 @@
           </div>
           <div class="d-flex">
             {{if .xsrf_token}}
-              {{if .LoggedIn}}
+              {{if .user_login}}
                 <a class="btn btn-sm btn-outline-secondary" href="{{url "/auth/logout"}}" id="logout">Logout</a>
               {{else}}
                 <a class="btn btn-sm btn-outline-primary" href="{{url "/auth/login"}}" id="login">Login with Github</a>
