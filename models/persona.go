@@ -18,7 +18,7 @@ var (
 )
 
 func init() {
-	goth.UseProviders(github.New(githubKey, githubSecret, outwardUrl+"/auth/login/callback", "user"))
+	goth.UseProviders(github.New(githubKey, githubSecret, outwardUrl+"/auth/login/callback", "user:email"))
 }
 
 type GithubLogoutController struct {
